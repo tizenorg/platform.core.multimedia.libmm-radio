@@ -51,8 +51,9 @@
 #define TUNER_INDEX				0
 #define FREQUENCY_MIN			87500
 #define FREQUENCY_MAX			108000
+#define DEFAULT_FREQ				107700
 #define FREQUENCY_STEP			50
-#define FREQ_FRAC				16	// For Nokia N800 only
+#define FREQ_FRAC				16	
 #define DEFAULT_WRAP_AROUND 	1	//If non-zero, wrap around when at the end of the frequency range, else stop seeking
 
 #define RADIO_VOLUME_TYPE 		VOLUME_TYPE_MEDIA
@@ -94,16 +95,16 @@ extern int errno;
     LOCAL FUNCTION PROTOTYPES:
 ---------------------------------------------------------------------------*/
 
-static bool		__mmradio_post_message(mm_radio_t* radio, enum MMMessageType msgtype, MMMessageParamType* param);
+static bool	__mmradio_post_message(mm_radio_t* radio, enum MMMessageType msgtype, MMMessageParamType* param);
 static int  		__mmradio_check_state(mm_radio_t* radio, MMRadioCommand command);
-static int			__mmradio_get_state(mm_radio_t* radio);
-static bool		__mmradio_set_state(mm_radio_t* radio, int new_state);
-static void 		__mmradio_seek_thread(mm_radio_t* radio);
-static void		__mmradio_scan_thread(mm_radio_t* radio);
+static int		__mmradio_get_state(mm_radio_t* radio);
+static bool	__mmradio_set_state(mm_radio_t* radio, int new_state);
+static void 	__mmradio_seek_thread(mm_radio_t* radio);
+static void	__mmradio_scan_thread(mm_radio_t* radio);
 static int 		__mmradio_set_sound_path(MMRadioOutputType path);
 ASM_cb_result_t	__mmradio_asm_callback(int handle, ASM_event_sources_t sound_event, ASM_sound_commands_t command, unsigned int sound_status, void* cb_data);
 static int 		__mmradio_register_media_volume_callback(mm_radio_t* radio);
-static bool 		__is_tunable_frequency(int freq);
+static bool 	__is_tunable_frequency(int freq);
 static int 		__mmradio_get_media_volume(unsigned int* value);
 /*===========================================================================
   FUNCTION DEFINITIONS
@@ -122,7 +123,7 @@ _mmradio_create_radio(mm_radio_t* radio)
 	/* set default value */
 	radio->radio_fd = -1;
 	radio->path = MM_RADIO_OUTPUT_HEADSET;
-	radio->freq = 1077;
+	radio->freq = DEFAULT_FREQ;
 
 	/* set default volume */
 	__mmradio_get_media_volume(&radio->volume);
@@ -194,8 +195,21 @@ _mmradio_realize(mm_radio_t* radio)
 
 		if ( ! ( radio->vc.capabilities & V4L2_CAP_TUNER) )
 		{
-			debug_error("this system does not support fm-radio!\n");
+			debug_error("this system can't support fm-radio!\n");
 			goto error;
+		}
+
+		/* set tuner audio mode */
+		ioctl(radio->radio_fd, VIDIOC_G_TUNER, &(radio->vt));
+
+		if ( ! ( (radio->vt).capability & V4L2_TUNER_CAP_STEREO) )
+		{
+			debug_error("this system can support mono!\n");
+			(radio->vt).audmode = V4L2_TUNER_MODE_MONO;
+		}
+		else
+		{
+			(radio->vt).audmode = V4L2_TUNER_MODE_STEREO;
 		}
 
 		/* Set tuner index. Must be 0. */
@@ -230,7 +244,6 @@ _mmradio_unrealize(mm_radio_t* radio)
 	MMRADIO_CHECK_INSTANCE( radio );
 	MMRADIO_CHECK_STATE_RETURN_IF_FAIL( radio, MMRADIO_COMMAND_UNREALIZE );
 
-
 	if( _mmradio_mute(radio) != MM_ERROR_NONE)
 		return MM_ERROR_RADIO_NOT_INITIALIZED;
 
@@ -249,7 +262,6 @@ _mmradio_unrealize(mm_radio_t* radio)
 			debug_error("failed to set asm state to STOP\n");
 			return res;
 	}
-
 
 	return MM_ERROR_NONE;
 }
@@ -343,7 +355,7 @@ _mmradio_get_volume(mm_radio_t* radio, int* pVolume)
 }
 
 int
-_mmradio_set_frequency(mm_radio_t* radio, int freq)
+_mmradio_set_frequency(mm_radio_t* radio, int freq) // 87500 ~ 108000 KHz
 {
 	debug_log("\n");
 
@@ -356,9 +368,7 @@ _mmradio_set_frequency(mm_radio_t* radio, int freq)
 	{
 		debug_log("radio device is not opened yet. just store given frequency [%d]\n", freq);
 		return MM_ERROR_NONE;
-	}	
-
-	freq = freq*100;	/* (875 ~ 1080) -> (87500 ~ 108000) */
+	}
 
 	if ( freq < FREQUENCY_MIN || freq > FREQUENCY_MAX )
 		return MM_ERROR_INVALID_ARGUMENT;
@@ -400,10 +410,9 @@ _mmradio_get_frequency(mm_radio_t* radio, int* pFreq)
 		return MM_ERROR_RADIO_INTERNAL;
 	}	
 
-	/* (87500 ~ 108000) -> (875 ~ 1080) */
+	/* (87500 ~ 108000) */
 	freq = (radio->vf).frequency;
 	freq /= FREQ_FRAC;
-	freq /= 100;
 
 	/* update freq in handle */
 	radio->freq = freq;
@@ -421,7 +430,6 @@ _mmradio_mute(mm_radio_t* radio)
 	MMRADIO_CHECK_INSTANCE( radio );
 	MMRADIO_CHECK_STATE_RETURN_IF_FAIL( radio, MMRADIO_COMMAND_MUTE );
 
-	/* TODO : */
 	if (radio->radio_fd < 0)
 	{
 		return MM_ERROR_RADIO_NOT_INITIALIZED;
@@ -473,7 +481,7 @@ _mmradio_set_message_callback(mm_radio_t* radio, MMMessageCallback callback, voi
 	radio->msg_cb = callback;
 	radio->msg_cb_param = user_param;
 
-	debug_log("msg_cb : 0x%x     msg_cb_param : 0x%x\n", (unsigned int)callback, (unsigned int)user_param);
+	debug_log("msg_cb : 0x%x msg_cb_param : 0x%x\n", (unsigned int)callback, (unsigned int)user_param);
 
 	return MM_ERROR_NONE;
 }
@@ -622,8 +630,8 @@ _mmradio_stop(mm_radio_t* radio)
 	res = mmradio_asm_set_state(&radio->sm, ASM_STATE_STOP, ASM_RESOURCE_NONE);
 	if ( res )
 	{
-			debug_error("failed to set asm state to PLAYING\n");
-			return res;
+		debug_error("failed to set asm state to PLAYING\n");
+		return res;
 	}
 
 	return MM_ERROR_NONE;
@@ -647,6 +655,7 @@ _mmradio_seek(mm_radio_t* radio, MMRadioSeekDirectionType direction)
 
 	ret = pthread_create(&radio->seek_thread, NULL,
 		(void *)__mmradio_seek_thread, (void *)radio);
+
 	if ( ret )
 	{
 		debug_log("failed create thread\n");
@@ -755,9 +764,6 @@ _mmradio_get_sound_path(mm_radio_t* radio, MMRadioOutputType* pPath )
 	return MM_ERROR_NONE;
 }
 
-/*===========================================================================
-  LOCAL FUNCTION DEFINITIONS
-========================================================================== */
 int
 __mmradio_set_sound_path(MMRadioOutputType path)
 {
@@ -787,21 +793,15 @@ __mmradio_set_sound_path(MMRadioOutputType path)
 		{
 			debug_error("automatic sound path is not implemented yet\n");
 			debug_error("this option can be valid only if hw supports internal antenna\n");
-			assert(0);
+			return MM_ERROR_RADIO_INTERNAL;
 		}
 		break;
 
 		default:
-			assert(0);
+			return MM_ERROR_RADIO_INTERNAL;
 		break;
 	}
 
-	/*
-	res = mm_sound_set_path(	MM_SOUND_GAIN_FMRADIO,
-												output_path,
-												input_path,
-												MM_SOUND_PATH_OPTION_NONE );
-	*/
 	res = avsys_audio_set_path_ex( AVSYS_AUDIO_GAIN_EX_FMRADIO,
 									output_path,
 									input_path,
@@ -827,13 +827,13 @@ __mmradio_scan_thread(mm_radio_t* radio)
 	struct v4l2_hw_freq_seek vs = {0,};
 	vs.tuner = TUNER_INDEX;
 	vs.type = V4L2_TUNER_RADIO;
-	vs.wrap_around = 0;	 /* around:1 not around:0 */
+	vs.wrap_around = 0; /* around:1 not around:0 */
 	vs.seek_upward = 1; /* up : 1	------- down : 0 */
 
 	if( _mmradio_mute(radio) != MM_ERROR_NONE)
 		goto FINISHED;
 
-	if( _mmradio_set_frequency(radio, FREQUENCY_MIN/100 ) != MM_ERROR_NONE)
+	if( _mmradio_set_frequency(radio, FREQUENCY_MIN ) != MM_ERROR_NONE)
 		goto FINISHED;
 
 	MMRADIO_POST_MSG(radio, MM_MESSAGE_RADIO_SCAN_START, NULL);
@@ -867,6 +867,9 @@ __mmradio_scan_thread(mm_radio_t* radio)
 		}
 
 		/* now we can get new frequency from radio device */
+
+		if ( radio->stop_scan ) break;
+
 		ret = _mmradio_get_frequency(radio, &freq);
 		if ( ret )
 		{
@@ -887,12 +890,14 @@ __mmradio_scan_thread(mm_radio_t* radio)
 			debug_log("scanning : new frequency : [%d]\n", param.radio_scan.frequency);
 			
 			/* drop if max freq is scanned */
-			if (param.radio_scan.frequency == FREQUENCY_MAX/100 )
+			if (param.radio_scan.frequency == FREQUENCY_MAX )
 			{
 				debug_log("%d freq is dropping...and stopping scan\n", param.radio_scan.frequency);
 				break;
 			}
-			
+
+			if ( radio->stop_scan ) break; // don't need to post
+
 			MMRADIO_POST_MSG(radio, MM_MESSAGE_RADIO_SCAN_INFO, &param);
 		}
 	}
@@ -901,7 +906,11 @@ FINISHED:
 	radio->scan_thread = 0;
 	
 	MMRADIO_SET_STATE( radio, MM_RADIO_STATE_READY );
-	MMRADIO_POST_MSG(radio, MM_MESSAGE_RADIO_SCAN_FINISH, NULL);
+
+	if ( ! radio->stop_scan )
+	{
+		MMRADIO_POST_MSG(radio, MM_MESSAGE_RADIO_SCAN_FINISH, NULL);
+	}
 
 	pthread_exit(NULL);
 	return;
@@ -910,7 +919,7 @@ FINISHED:
 bool 
 __is_tunable_frequency(int freq)
 {
-	if ( freq == FREQUENCY_MAX/100 || freq == FREQUENCY_MIN/100 )
+	if ( freq == FREQUENCY_MAX || freq == FREQUENCY_MIN )
 		return false;
 
 	return true;
@@ -1195,37 +1204,29 @@ __mmradio_set_state(mm_radio_t* radio, int new_state)
 	msg.state.current = radio->current_state;
 
 	/* post message to application */
-#if 0
-	if ( radio->sm.by_asm_cb )
-	{
-		msg_type = MM_MESSAGE_STATE_INTERRUPTED;
-		msg.union_type = MM_MSG_UNION_CODE;
-		msg.code = radio->sm.event_src;
-	}
-	else
-	{
-		msg_type = MM_MESSAGE_STATE_CHANGED;
-	}
-
-	MMRADIO_POST_MSG( radio, msg_type, &msg );
-#else
 	switch( radio->sm.by_asm_cb )
 	{
-	case MMRADIO_ASM_CB_NONE:
-		msg_type = MM_MESSAGE_STATE_CHANGED;
-		MMRADIO_POST_MSG( radio, msg_type, &msg );
+		case MMRADIO_ASM_CB_NONE:
+		{
+			msg_type = MM_MESSAGE_STATE_CHANGED;
+			MMRADIO_POST_MSG( radio, msg_type, &msg );
+		}
 		break;
-	case MMRADIO_ASM_CB_POSTMSG:
-		msg_type = MM_MESSAGE_STATE_INTERRUPTED;
-		msg.union_type = MM_MSG_UNION_CODE;
-		msg.code = radio->sm.event_src;
-		MMRADIO_POST_MSG( radio, msg_type, &msg );
+
+		case MMRADIO_ASM_CB_POSTMSG:
+		{
+			msg_type = MM_MESSAGE_STATE_INTERRUPTED;
+			msg.union_type = MM_MSG_UNION_CODE;
+			msg.code = radio->sm.event_src;
+			MMRADIO_POST_MSG( radio, msg_type, &msg );
+		}
 		break;
-	case MMRADIO_ASM_CB_SKIP_POSTMSG:
-	default:
+
+		case MMRADIO_ASM_CB_SKIP_POSTMSG:
+		default:
 		break;
 	}
-#endif
+
 	return true;
 }
 
@@ -1247,98 +1248,72 @@ __mmradio_asm_callback(int handle, ASM_event_sources_t event_source, ASM_sound_c
 	int result = MM_ERROR_NONE;
 	ASM_cb_result_t	cb_res = ASM_CB_RES_NONE;
 
-	//radio->sm.by_asm_cb = 1;
 	radio->sm.event_src = event_source;
+
 	switch(command)
 	{
-	case ASM_COMMAND_STOP:
-	case ASM_COMMAND_PAUSE:
-	{
-		debug_log("ASM asked me to stop. cmd : %d\n", command);
-		switch(event_source)
+		case ASM_COMMAND_STOP:
+		case ASM_COMMAND_PAUSE:
 		{
-		case ASM_EVENT_SOURCE_CALL_START:
-		case ASM_EVENT_SOURCE_ALARM_START:
-			radio->sm.by_asm_cb = MMRADIO_ASM_CB_POSTMSG;
-			result = _mmradio_stop(radio);
-			if( result ) {
-				debug_error("failed to stop radio\n");
-			}
-			debug_log("skip unrealize in asm callback")
-			break;
-		case ASM_EVENT_SOURCE_OTHER_APP:
-		case ASM_EVENT_SOURCE_RESOURCE_CONFLICT:
-		default:
-			radio->sm.by_asm_cb = MMRADIO_ASM_CB_SKIP_POSTMSG;
-			result = _mmradio_stop(radio);
-			if( result ) {
-				debug_error("failed to stop radio\n");
-			}
+			debug_log("ASM asked me to stop. cmd : %d\n", command);
+			switch(event_source)
+			{
+				case ASM_EVENT_SOURCE_CALL_START:
+				case ASM_EVENT_SOURCE_ALARM_START:
+				{
+					radio->sm.by_asm_cb = MMRADIO_ASM_CB_POSTMSG;					
+					result = _mmradio_stop(radio);
+					if( result ) 
+					{
+						debug_error("failed to stop radio\n");
+					}
 
-			radio->sm.by_asm_cb = MMRADIO_ASM_CB_POSTMSG;
-			result = _mmradio_unrealize(radio);
-			if ( result ) {
-				debug_error("failed to unrealize radio\n");
+					debug_log("skip unrealize in asm callback")
+				}
+				break;
+
+				case ASM_EVENT_SOURCE_OTHER_APP:
+				case ASM_EVENT_SOURCE_RESOURCE_CONFLICT:
+				default:
+				{
+					radio->sm.by_asm_cb = MMRADIO_ASM_CB_SKIP_POSTMSG;					
+					result = _mmradio_stop(radio);
+					if( result ) 
+					{
+						debug_error("failed to stop radio\n");
+					}
+
+					radio->sm.by_asm_cb = MMRADIO_ASM_CB_POSTMSG;
+					result = _mmradio_unrealize(radio);
+					if ( result ) 
+					{
+						debug_error("failed to unrealize radio\n");
+					}
+				}
+				break;
 			}
-			break;
+			cb_res = ASM_CB_RES_STOP;
 		}
+		break;
 
-		cb_res = ASM_CB_RES_STOP;
+		case ASM_COMMAND_PLAY:
+		case ASM_COMMAND_RESUME:
+		{
+			MMMessageParamType msg = {0,};
+			msg.union_type = MM_MSG_UNION_CODE;
+			msg.code = event_source;
+
+			debug_log("Got ASM resume message by %d\n", msg.code);
+			MMRADIO_POST_MSG(radio, MM_MESSAGE_READY_TO_RESUME, &msg);
+
+			cb_res = ASM_CB_RES_IGNORE;
+			radio->sm.by_asm_cb = MMRADIO_ASM_CB_NONE;
+		}
+		break;
+
+		default:
 		break;
 	}
-	case ASM_COMMAND_PLAY:
-	case ASM_COMMAND_RESUME:
-	{
-#if 0
-		debug_log("ASM asked me to play. cmd : %d\n", command);
-		result = _mmradio_realize(radio);
-		if ( result )
-			debug_error("failed to realize radio\n");
 
-		radio->sm.by_asm_cb = 1;
-		result = _mmradio_start(radio);
-		if ( result )
-			debug_error("failed to start radio\n");
-
-		cb_res = ASM_CB_RES_PLAYING;
-#else
-		MMMessageParamType msg = {0,};
-		msg.union_type = MM_MSG_UNION_CODE;
-		msg.code = event_source;
-		debug_log("Got ASM resume message by %d\n", msg.code);
-		MMRADIO_POST_MSG(radio, MM_MESSAGE_READY_TO_RESUME, &msg);
-		cb_res = ASM_CB_RES_IGNORE;
-		radio->sm.by_asm_cb = MMRADIO_ASM_CB_NONE;
-#endif
-		break;
-	}
-	default:
-		break;
-	}
 	return cb_res;
 }
-
-#if 0
-int mmradio_set_attrs(mm_radio_t* radio, MMRadioAttrsType type, MMHandleType attrs)
-{
-	debug_log("\n");
-
-	MMRADIO_CHECK_INSTANCE( radio );
-
-	/* TODO : */
-
-	return MM_ERROR_NONE;
-}
-
-MMHandleType mmradio_get_attrs(mm_radio_t* radio, MMRadioAttrsType type)
-{
-	debug_log("\n");
-
-	MMRADIO_CHECK_INSTANCE( radio );
-
-	/* TODO : */
-
-	return MM_ERROR_NONE;
-}
-#endif
-

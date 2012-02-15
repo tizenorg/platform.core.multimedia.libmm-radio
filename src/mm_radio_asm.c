@@ -43,7 +43,6 @@ int mmradio_asm_register(MMRadioASM* sm, ASM_sound_cb_t callback, void* param)
 	}
 
 	/* read session type */
-//	errorcode = __MMSessionUtilReadType(&sessionType);
 	errorcode = _mm_session_util_read_type(-1, &sessionType);
 	if ( errorcode )
 	{
@@ -107,7 +106,6 @@ int mmradio_asm_deregister(MMRadioASM* sm)
 	}
 
 	/* read session type */
-//	errorcode = __MMSessionUtilReadType(&sessionType);
 	errorcode = _mm_session_util_read_type(-1, &sessionType);
 	if ( errorcode )
 	{
@@ -147,7 +145,6 @@ int mmradio_asm_set_state(MMRadioASM* sm, ASM_sound_states_t state, ASM_resource
 	}
 
 	/* read session type */
-//	errorcode = __MMSessionUtilReadType(&sessionType);
 	errorcode = _mm_session_util_read_type(-1, &sessionType);
 	if ( errorcode )
 	{
@@ -162,7 +159,7 @@ int mmradio_asm_set_state(MMRadioASM* sm, ASM_sound_states_t state, ASM_resource
 		return MM_ERROR_NONE;
 	}
 
-	if ( sm->by_asm_cb == MMRADIO_ASM_CB_NONE ) //|| sm->state == ASM_STATE_PLAYING )
+	if ( sm->by_asm_cb == MMRADIO_ASM_CB_NONE )
 	{
 		int ret = 0;
 

@@ -184,7 +184,7 @@ int __menu(void)
 	printf("[8] mm_radio_start\n");
 	printf("[9] mm_radio_stop\n");
 	printf("[10] mm_radio_seek\n");
-	printf("[11] mm_radio_set_frequency(ex.1077)\n");
+	printf("[11] mm_radio_set_frequency(ex.107700)\n");
 	printf("[12] mm_radio_get_frequency\n");
 	printf("[13] mm_radio_scan_start\n");
 	printf("[14] mm_radio_scan_stop\n");

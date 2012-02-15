@@ -139,14 +139,12 @@ int  mm_radio_destroy(MMHandleType hradio)
 	if ( result != MM_ERROR_NONE )
 	{
 		debug_error("failed to destroy radio\n");
-		/* FIXIT : add more code for handling error */
 	}
 	
 	/* free radio */
 	MMRADIO_FREEIF( radio );
 
 	MMTA_ACUM_ITEM_SHOW_RESULT_TO(MMTA_SHOW_FILE);
-	//MMTA_ACUM_ITEM_SHOW_RESULT_TO(MMTA_SHOW_STDOUT);
 
 	MMTA_RELEASE();
 	
@@ -379,30 +377,6 @@ int mm_radio_set_sound_path(MMHandleType hradio, MMRadioOutputType path)
 	return_val_if_fail(radio, MM_ERROR_RADIO_NOT_INITIALIZED);
 	return_val_if_fail(path >= MM_RADIO_OUTPUT_AUTO && path <= MM_RADIO_OUTPUT_HEADSET, MM_ERROR_INVALID_ARGUMENT);
 
-#if 0
-	MMRADIO_CMD_LOCK( radio );
-
-	_mmradio_get_state(radio, &radio_state);
-	switch(radio_state)
-	{
-	case MM_RADIO_STATE_READY:
-		//cache sound path
-		radio->path = path;
-		break;
-	case MM_RADIO_STATE_PLAYING:
-	case MM_RADIO_STATE_SCANNING:
-		//immediate set sound path
-		result = _mmradio_set_sound_path( radio, path );
-		break;
-	case MM_RADIO_STATE_NULL:
-	default:
-		debug_error("Invalid state of mm_radio handle\n");
-		result = MM_ERROR_RADIO_INVALID_STATE;
-	}
-
-	MMRADIO_CMD_UNLOCK( radio );
-#endif
-
 	return result;
 }
 
@@ -416,16 +390,6 @@ int mm_radio_get_sound_path(MMHandleType hradio, MMRadioOutputType* pPath)
 
 	return_val_if_fail(radio, MM_ERROR_RADIO_NOT_INITIALIZED);
 	return_val_if_fail(pPath, MM_ERROR_INVALID_ARGUMENT);
-
-#if 0
-	MMRADIO_CMD_LOCK( radio );
-
-	result = _mmradio_get_sound_path( radio, &path );
-
-	*pPath = path;
-
-	MMRADIO_CMD_UNLOCK( radio );
-#endif
 
 	return result;
 }
@@ -455,64 +419,3 @@ int mm_radio_set_mute(MMHandleType hradio, bool muted)
 	return result;
 }
 
-#if 0
-int MMRadioGetAttrs(MMHandleType hradio, MMPlayerAttrsType type, MMHandleType *attrs)
-{
-	int result = MM_ERROR_NONE;
-	mm_radio_t* radio = (mm_radio_t*)hradio;
-
-	debug_log("\n");
-
-	return_val_if_fail(radio, MM_ERROR_RADIO_NOT_INITIALIZED);
-
-
-	if ( type >=MM_RADIO_ATTRS_NUM )
-	{
-		debug_error("type(%d) is invalid\n", type);
-		result = MM_ERROR_COMMON_INVALID_ARGUMENT;
-		goto RETURN;
-	}
-
-	if ( !attrs )
-	{
-		debug_error("attrs is NULL\n");
-		result = MM_ERROR_COMMON_INVALID_ARGUMENT;
-		goto RETURN;
-	}
-
-	*attrs = (MMHandleType)mmradio_get_attrs( radio, type );
-
-RETURN:
-
-	
-	return result;
-}
-
-
-int MMRadioSetAttrs(MMHandleType hradio, MMPlayerAttrsType type, MMHandleType attrs)
-{
-	int result = MM_ERROR_NONE;
-	mm_radio_t* radio = (mm_radio_t*)hradio;
-
-	debug_log("\n");
-
-	return_val_if_fail(radio, MM_ERROR_RADIO_NOT_INITIALIZED);
-
-	MMRADIO_CMD_LOCK( radio );
-
-	if ( type >=MM_RADIO_ATTRS_NUM )
-	{
-		debug_error("type(%d) is invalid\n", type);
-		result = MM_ERROR_COMMON_INVALID_ARGUMENT;
-		goto RETURN;
-	}
-
-	result = mmradio_set_attrs( radio, type, attrs );
-
-RETURN:
-
-	MMRADIO_CMD_UNLOCK( radio );
-
-	return result;
-}
-#endif

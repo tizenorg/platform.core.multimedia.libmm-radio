@@ -157,11 +157,6 @@ int _mmradio_get_sound_path(mm_radio_t* radio, MMRadioOutputType* pPath );
 int _mmradio_release_sound_path(void);
 int _mmradio_audio_state_update(bool onoff);
 
-#if 0
-int mmradio_set_attrs(mm_radio_t*  radio, MMRadioAttrsType type, MMHandleType attrs);
-MMHandleType mmradio_get_attrs(mm_radio_t*  radio, MMRadioAttrsType type);
-#endif
-
 #ifdef __cplusplus
 	}
 #endif
