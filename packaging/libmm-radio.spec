@@ -2,8 +2,8 @@ Name:       libmm-radio
 Summary:    Multimedia Framework Radio Library
 Version:    0.1.2
 Release:    1
-Group:      TO_BE/FILLED_IN
-License:    TO BE FILLED IN
+Group:      System/Libraries
+License:    Apache-2.0
 Source0:    %{name}-%{version}.tar.gz
 Requires(post): /sbin/ldconfig
 Requires(postun): /sbin/ldconfig
@@ -48,7 +48,6 @@ CFLAGS=" %{optflags}  -DGST_EXT_TIME_ANALYSIS -DEXPORT_API=\"__attribute__((visi
 make %{?jobs:-j%jobs}
 
 %install
-rm -rf %{buildroot}
 %make_install
 
 
@@ -70,7 +69,4 @@ rm -rf %{buildroot}
 %{_libdir}/pkgconfig/mm-radio.pc
 %{_includedir}/mmf/mm_radio.h
 
-%files internal-devel
-%defattr(-,root,root,-)
-%{_includedir}/mmf/mm_radio_internal.h
 
