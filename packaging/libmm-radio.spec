@@ -28,15 +28,6 @@ Requires:   %{name} = %{version}-%{release}
 %description devel
 Description: Multimedia Framework Radio Library (DEV)
 
-%package internal-devel
-Summary:    Multimedia Framework Radio Library (inhouse)
-Group:      Development/Libraries
-Requires:   %{name}-devel = %{version}-%{release}
-
-%description internal-devel
-Description: Multimedia Framework Radio Library (inhouse)
-
-
 %prep
 %setup -q
 

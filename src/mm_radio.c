@@ -419,3 +419,34 @@ int mm_radio_set_mute(MMHandleType hradio, bool muted)
 	return result;
 }
 
+int mm_radio_get_signal_strength(MMHandleType hradio, int *value)
+{
+	return_val_if_fail(hradio, MM_ERROR_RADIO_NOT_INITIALIZED);
+	return_val_if_fail(value, MM_ERROR_INVALID_ARGUMENT);
+
+	debug_log("\n");
+
+	int ret = MM_ERROR_NONE;
+
+	mm_radio_t* radio = (mm_radio_t*)hradio;
+
+	MMRADIO_CMD_LOCK( radio );
+
+	if (ioctl(radio->radio_fd, VIDIOC_G_TUNER, &(radio->vt)) < 0)
+	{
+		debug_error("ioctl VIDIOC_G_TUNER error\n");
+
+		return MM_ERROR_RADIO_INTERNAL;
+	}
+
+	usleep(SAMPLEDELAY);
+
+	*value = radio->vt.signal;
+
+	MMRADIO_CMD_UNLOCK( radio );
+
+	debug_log("signal strength = %d\n", *value);
+
+	return ret;
+}
+

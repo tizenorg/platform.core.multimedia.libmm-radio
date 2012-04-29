@@ -3778,6 +3778,9 @@ int main(int argc, char **argv)
  */
 int mm_radio_set_mute(MMHandleType hradio, bool muted);
 
+int mm_radio_get_signal_strength(MMHandleType hradio, int *value);
+
+
 
 /**
 	@}
