@@ -23,7 +23,7 @@
 #include "mm_radio.h"
 #include "mm_radio_rt_api_test.h"
 
-#define MENU_ITEM_MAX	16
+#define MENU_ITEM_MAX	18
 
 static int __menu(void);
 static void __call_api( int choosen );
@@ -86,7 +86,7 @@ void __call_api( int choosen )
 
 		case 10:
 		{
-			MMRadioSeekDirectionType direction = 0;
+			int direction = 0;
 			printf("input seek direction(0:UP/1:DOWN) : ");
 			scanf("%d", &direction);
 			RADIO_TEST__( mm_radio_seek(g_my_radio, direction); )
@@ -123,21 +123,29 @@ void __call_api( int choosen )
 		}
 		break;
 
-		case 15:
-		{
-			MMRadioOutputType path = 0;
-			printf("input path(0:NONE/1:AUTO/2:SPK/3:EAR) : ");
-			scanf("%d", &path);
-			RADIO_TEST__( mm_radio_set_sound_path(g_my_radio, path); )
-		}
-		break;
-
 		case 16:
 		{
-			bool muted = 0;
+			int muted = 0;
 			printf("select one(0:UNMUTE/1:MUTE) : ");
 			scanf("%d", &muted);
 			RADIO_TEST__( mm_radio_set_mute(g_my_radio, muted); )
+		}
+		break;
+
+		case 17:
+		{
+			MMRadioRegionType type = 0;
+			RADIO_TEST__( mm_radio_get_region_type(g_my_radio, &type ); )
+			printf("region type : %d\n", type);
+		}
+		break;
+
+		case 18:
+		{
+			unsigned int min_freq = 0;
+			unsigned int max_freq = 0;
+			RADIO_TEST__( mm_radio_get_region_frequency_range(g_my_radio, &min_freq, &max_freq ); )
+			printf("region band range: %d ~ %d KHz\n", min_freq, max_freq);
 		}
 		break;
 
@@ -188,8 +196,9 @@ int __menu(void)
 	printf("[12] mm_radio_get_frequency\n");
 	printf("[13] mm_radio_scan_start\n");
 	printf("[14] mm_radio_scan_stop\n");
-	printf("[15] mm_radio_set_sound_path\n");
 	printf("[16] mm_radio_set_mute\n");
+	printf("[17] mm_radio_get_region_type\n");
+	printf("[18] mm_radio_get_region_frequency_range\n");
 	printf("[0] quit\n");
 	printf("---------------------------------------------------------\n");
 	printf("choose one : ");

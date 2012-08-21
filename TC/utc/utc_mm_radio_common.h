@@ -110,11 +110,4 @@ void utc_mm_radio_scan_start_func_02 ();
 void utc_mm_radio_scan_stop_func_01 ();
 void utc_mm_radio_scan_stop_func_02 ();
 
-void utc_mm_radio_set_sound_path_func_01 ();
-void utc_mm_radio_set_sound_path_func_02 ();
-
-void utc_mm_radio_get_sound_path_func_01 ();
-void utc_mm_radio_get_sound_path_func_02 ();
-
-
 #endif /* UTS_MM_FRAMEWORK_RADIO_COMMON_H */

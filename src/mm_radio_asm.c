@@ -22,6 +22,7 @@
 #include <assert.h>
 #include <mm_debug.h>
 #include "mm_radio_asm.h"
+#include "mm_radio_utils.h"
 
 static ASM_sound_events_t __mmradio_asm_get_event_type(int type);
 
@@ -34,11 +35,11 @@ int mmradio_asm_register(MMRadioASM* sm, ASM_sound_cb_t callback, void* param)
 	int event_type = ASM_EVENT_NONE;
 	int pid = -1;
 
-	debug_log("\n");
+	MMRADIO_LOG_FENTER();
 
 	if ( ! sm )
 	{
-		debug_error("invalid session handle\n");
+		MMRADIO_LOG_ERROR("invalid session handle\n");
 		return MM_ERROR_RADIO_NOT_INITIALIZED;
 	}
 
@@ -46,14 +47,14 @@ int mmradio_asm_register(MMRadioASM* sm, ASM_sound_cb_t callback, void* param)
 	errorcode = _mm_session_util_read_type(-1, &sessionType);
 	if ( errorcode )
 	{
-		debug_warning("Read MMSession Type failed. use default \"exclusive\" type\n");
+		MMRADIO_LOG_WARNING("Read MMSession Type failed. use default \"exclusive\" type\n");
 		sessionType = MM_SESSION_TYPE_EXCLUSIVE;
 
 		/* init session */
 		errorcode = mm_session_init(sessionType);
 		if ( errorcode )
 		{
-				debug_critical("mm_session_init() failed\n");
+				MMRADIO_LOG_CRITICAL("mm_session_init() failed\n");
 				return errorcode;
 		}
 	}
@@ -61,7 +62,7 @@ int mmradio_asm_register(MMRadioASM* sm, ASM_sound_cb_t callback, void* param)
 	/* check if it's CALL */
 	if ( sessionType == MM_SESSION_TYPE_CALL || sessionType == MM_SESSION_TYPE_VIDEOCALL)
 	{
-		debug_log("session type is VOICE or VIDEO CALL (%d)\n", sessionType);
+		MMRADIO_LOG_DEBUG("session type is VOICE or VIDEO CALL (%d)\n", sessionType);
 		return MM_ERROR_NONE;
 	}
 
@@ -72,23 +73,25 @@ int mmradio_asm_register(MMRadioASM* sm, ASM_sound_cb_t callback, void* param)
 	if ( sm->pid > 0 )
 	{
 		pid = sm->pid;
-		debug_log("mm-radio is running on different process. Just faking pid to [%d]. :-p\n", pid);
+		MMRADIO_LOG_DEBUG("mm-radio is running on different process. Just faking pid to [%d]. :-p\n", pid);
 	}
 	else
 	{
-		debug_log("no pid has assigned. using default(current) context\n");
+		MMRADIO_LOG_DEBUG("no pid has assigned. using default(current) context\n");
 	}
 
 	/* register audio-session-manager callback */
 	if( ! ASM_register_sound(pid, &asm_handle, event_type, ASM_STATE_NONE, callback, (void*)param, ASM_RESOURCE_NONE, &errorcode))
 	{
-		debug_critical("ASM_register_sound() failed\n");
+		MMRADIO_LOG_CRITICAL("ASM_register_sound() failed\n");
 		return errorcode;
 	}
 
 	/* now succeded to register our callback. take result */
 	sm->handle = asm_handle;
 	sm->state = ASM_STATE_NONE;
+
+	MMRADIO_LOG_FLEAVE();
 
 	return MM_ERROR_NONE;
 }
@@ -99,9 +102,11 @@ int mmradio_asm_deregister(MMRadioASM* sm)
 	int event_type = ASM_EVENT_NONE;
 	int errorcode = 0;
 
+	MMRADIO_LOG_FENTER();
+
 	if ( ! sm )
 	{
-		debug_error("invalid session handle\n");
+		MMRADIO_LOG_ERROR("invalid session handle\n");
 		return MM_ERROR_RADIO_NOT_INITIALIZED;
 	}
 
@@ -109,14 +114,14 @@ int mmradio_asm_deregister(MMRadioASM* sm)
 	errorcode = _mm_session_util_read_type(-1, &sessionType);
 	if ( errorcode )
 	{
-		debug_error("MMSessionReadType Fail %s\n",__func__);
+		MMRADIO_LOG_ERROR("MMSessionReadType Fail %s\n",__func__);
 		return MM_ERROR_POLICY_INTERNAL;
 	}
 
 	/* check if it's CALL */
 	if ( sessionType == MM_SESSION_TYPE_CALL || sessionType == MM_SESSION_TYPE_VIDEOCALL)
 	{
-		debug_log("session type is VOICE or VIDEO CALL (%d)\n", sessionType);
+		MMRADIO_LOG_DEBUG("session type is VOICE or VIDEO CALL (%d)\n", sessionType);
 		return MM_ERROR_NONE;
 	}
 
@@ -125,9 +130,11 @@ int mmradio_asm_deregister(MMRadioASM* sm)
 
 	if( ! ASM_unregister_sound( sm->handle, event_type, &errorcode) )
 	{
-		debug_error("Unregister sound failed 0x%X\n", errorcode);
+		MMRADIO_LOG_ERROR("Unregister sound failed 0x%X\n", errorcode);
 		return MM_ERROR_POLICY_INTERNAL;
 	}
+
+	MMRADIO_LOG_FLEAVE();
 
 	return MM_ERROR_NONE;
 }
@@ -138,9 +145,11 @@ int mmradio_asm_set_state(MMRadioASM* sm, ASM_sound_states_t state, ASM_resource
 	int event_type = ASM_EVENT_NONE;
 	int errorcode = 0;
 
+	MMRADIO_LOG_FENTER();
+
 	if ( ! sm )
 	{
-		debug_error("invalid session handle\n");
+		MMRADIO_LOG_ERROR("invalid session handle\n");
 		return MM_ERROR_RADIO_NOT_INITIALIZED;
 	}
 
@@ -148,18 +157,18 @@ int mmradio_asm_set_state(MMRadioASM* sm, ASM_sound_states_t state, ASM_resource
 	errorcode = _mm_session_util_read_type(-1, &sessionType);
 	if ( errorcode )
 	{
-		debug_error("MMSessionReadType Fail\n");
+		MMRADIO_LOG_ERROR("MMSessionReadType Fail\n");
 		return MM_ERROR_POLICY_INTERNAL;
 	}
 
 	/* check if it's CALL */
 	if ( sessionType == MM_SESSION_TYPE_CALL || sessionType == MM_SESSION_TYPE_VIDEOCALL )
 	{
-		debug_log("session type is VOICE or VIDEO CALL (%d)\n", sessionType);
+		MMRADIO_LOG_DEBUG("session type is VOICE or VIDEO CALL (%d)\n", sessionType);
 		return MM_ERROR_NONE;
 	}
 
-	if ( sm->by_asm_cb == MMRADIO_ASM_CB_NONE )
+	if ( sm->by_asm_cb == MMRADIO_ASM_CB_NONE ) //|| sm->state == ASM_STATE_PLAYING )
 	{
 		int ret = 0;
 
@@ -167,7 +176,7 @@ int mmradio_asm_set_state(MMRadioASM* sm, ASM_sound_states_t state, ASM_resource
 
 		if( ! ASM_set_sound_state( sm->handle, event_type, state, resource, &ret) )
 		{
-			debug_error("set ASM state to [%d] failed 0x%X\n", state, ret);
+			MMRADIO_LOG_ERROR("set ASM state to [%d] failed 0x%X\n", state, ret);
 			return MM_ERROR_POLICY_BLOCKED;
 		}
 
@@ -179,6 +188,8 @@ int mmradio_asm_set_state(MMRadioASM* sm, ASM_sound_states_t state, ASM_resource
 		sm->state = state;
 	}
 
+	MMRADIO_LOG_FLEAVE();
+
 	return MM_ERROR_NONE;
 }
 
@@ -186,6 +197,8 @@ int mmradio_asm_set_state(MMRadioASM* sm, ASM_sound_states_t state, ASM_resource
 ASM_sound_events_t __mmradio_asm_get_event_type(int type)
 {
 	int event_type = ASM_EVENT_NONE;
+
+	MMRADIO_LOG_FENTER();
 
 	/* interpret session type */
 	switch(type)
@@ -206,9 +219,11 @@ ASM_sound_events_t __mmradio_asm_get_event_type(int type)
 		case MM_SESSION_TYPE_CALL:
 		case MM_SESSION_TYPE_VIDEOCALL:
 		default:
-			debug_critical("unexpected case! (%d)\n", type);
+			MMRADIO_LOG_CRITICAL("unexpected case! (%d)\n", type);
 			assert(0);
 	}
+
+	MMRADIO_LOG_FLEAVE();
 
 	return event_type;
 }

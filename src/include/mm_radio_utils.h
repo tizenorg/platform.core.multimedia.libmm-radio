@@ -27,6 +27,14 @@
 #include <mm_error.h>
 #include <mm_message.h>
 
+/* radio log */
+#define MMRADIO_LOG_FENTER		debug_fenter
+#define MMRADIO_LOG_FLEAVE		debug_fleave
+#define MMRADIO_LOG_DEBUG		debug_log
+#define MMRADIO_LOG_ERROR		debug_error
+#define MMRADIO_LOG_WARNING	debug_warning
+#define MMRADIO_LOG_CRITICAL	debug_critical
+
 /* general */
 #ifndef ARRAY_SIZE
 #define ARRAY_SIZE(arr)		(sizeof(arr) / sizeof((arr)[0]))
@@ -44,6 +52,13 @@ if ( ! x_radio ) \
 { \
 	debug_error("radio instance is NULL\n"); \
 	return MM_ERROR_RADIO_NOT_INITIALIZED; \
+}
+
+#define MMRADIO_CHECK_DEVICE_STATE( x_radio ) \
+if ( x_radio->radio_fd < 0 ) \
+{ \
+	debug_error("not available radio device\n"); \
+	return MM_ERROR_RADIO_NOT_INITIALIZED;\
 }
 
 /* command locking for multithreading */
@@ -81,7 +96,7 @@ do \
 { \
 	if( x_ret < 0 ) \
 	{ \
-		debug_error("%s failed\n", x_msg);\
+		debug_error("%s error\n", x_msg);\
 		return x_ret; \
 	} \
 } while( 0 ) ;

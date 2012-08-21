@@ -27,7 +27,9 @@
 
 #include "mm_radio.h"
 #include "mm_radio_test_type.h"
+#include "mm_radio_rt_api_test.h"
 
+#define DEFAULT_TEST_FREQ	107700
 
 /* test items...*/
 int __test_radio_init(void);
@@ -37,6 +39,7 @@ int __test_repeat_start_stop(void);
 int __test_repeat_seek(void);
 int __test_repeat_whole(void);
 int __test_manual_api_calling(void);
+int __test_radio_hw_debug(void);
 
 static int __msg_callback(int message, void *param, void *user_param);
 
@@ -201,7 +204,7 @@ static int __msg_callback(int message, void *pParam, void *user_param)
 		break;
 	case MM_MESSAGE_RADIO_SCAN_INFO:
 		assert(param);
-		printf("MM_MESSAGE_RADIO_SCAN_INFO : freq : %d\n", param->radio_scan.frequency);
+		printf("MM_MESSAGE_RADIO_SCAN_INFO : freq : %d KHz\n", param->radio_scan.frequency);
 		break;
 	case MM_MESSAGE_RADIO_SCAN_STOP:
 		printf("MM_MESSAGE_RADIO_SCAN_STOP\n");
@@ -214,7 +217,7 @@ static int __msg_callback(int message, void *pParam, void *user_param)
 			printf("MM_MESSAGE_RADIO_SEEK_START\n");
 			break;
 	case MM_MESSAGE_RADIO_SEEK_FINISH:
-		printf("MM_MESSAGE_RADIO_SEEK_FINISHED : freq : %d\n", param->radio_scan.frequency);
+		printf("MM_MESSAGE_RADIO_SEEK_FINISHED : freq : %d KHz\n", param->radio_scan.frequency);
 		break;
 	default:
 		printf("ERROR : unknown message received!\n");
@@ -250,7 +253,7 @@ int __test_radio_listen_gorealra(void)
 	RADIO_TEST__(	mm_radio_create(&radio);	)
 	RADIO_TEST__( mm_radio_set_message_callback( radio, (MMMessageCallback)__msg_callback, (void*)radio ); )
 	RADIO_TEST__( mm_radio_realize(radio); )
-	RADIO_TEST__( mm_radio_set_frequency( radio, 1077 ); )
+	RADIO_TEST__( mm_radio_set_frequency( radio, DEFAULT_TEST_FREQ ); )
 	RADIO_TEST__( mm_radio_start(radio); )
 
 	return ret;
@@ -290,7 +293,7 @@ int __test_repeat_start_stop(void)
 	RADIO_TEST__(	mm_radio_create(&radio);	)
 	RADIO_TEST__( mm_radio_set_message_callback( radio, (MMMessageCallback)__msg_callback, (void*)radio ); )
 	RADIO_TEST__( mm_radio_realize(radio); )
-	RADIO_TEST__( mm_radio_set_frequency( radio, 1077 ); )
+	RADIO_TEST__( mm_radio_set_frequency( radio, DEFAULT_TEST_FREQ ); )
 
 	while(1)
 	{
@@ -324,3 +327,4 @@ int __test_manual_api_calling(void)
 
 	return 0;
 }
+

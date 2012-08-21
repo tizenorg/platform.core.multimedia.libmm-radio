@@ -42,7 +42,7 @@ endif
 LDFLAGS += -Wl,--rpath=$(PREFIX)/lib -Wl,--hash-style=both -Wl,--as-needed
 
 
-config.status: configure
+config.status:
 	dh_testdir
 	./autogen.sh
 	# Add here commands to configure the package.

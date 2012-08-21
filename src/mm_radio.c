@@ -87,7 +87,7 @@ int mm_radio_create(MMHandleType *hradio)
 	int result = MM_ERROR_NONE;
 	mm_radio_t* new_radio = NULL;
 	
-	debug_log("\n");
+	MMRADIO_LOG_FENTER();
 
 	return_val_if_fail(hradio, MM_ERROR_RADIO_NOT_INITIALIZED);
 
@@ -110,6 +110,8 @@ int mm_radio_create(MMHandleType *hradio)
 
 	*hradio = (MMHandleType)new_radio;
 
+	MMRADIO_LOG_FLEAVE();
+
 	return result;
 
 ERROR:
@@ -120,6 +122,8 @@ ERROR:
 	}
 
 	*hradio = (MMHandleType)0;
+
+	MMRADIO_LOG_FLEAVE();
 	
 	/* FIXIT : need to specify more error case */
 	return MM_ERROR_RADIO_NO_FREE_SPACE; 
@@ -130,7 +134,7 @@ int  mm_radio_destroy(MMHandleType hradio)
 	int result = MM_ERROR_NONE;
 	mm_radio_t* radio = (mm_radio_t*)hradio;
 
-	debug_log("\n");
+	MMRADIO_LOG_FENTER();
 	
 	return_val_if_fail(radio, MM_ERROR_RADIO_NOT_INITIALIZED);
 
@@ -145,8 +149,11 @@ int  mm_radio_destroy(MMHandleType hradio)
 	MMRADIO_FREEIF( radio );
 
 	MMTA_ACUM_ITEM_SHOW_RESULT_TO(MMTA_SHOW_FILE);
+	//MMTA_ACUM_ITEM_SHOW_RESULT_TO(MMTA_SHOW_STDOUT);
 
 	MMTA_RELEASE();
+
+	MMRADIO_LOG_FLEAVE();
 	
 	return result;
 }
@@ -156,7 +163,7 @@ int mm_radio_realize(MMHandleType hradio)
 	int result = MM_ERROR_NONE;
 	mm_radio_t* radio = (mm_radio_t*)hradio;
 	
-	debug_log("\n");
+	MMRADIO_LOG_FENTER();
 
 	return_val_if_fail(radio, MM_ERROR_RADIO_NOT_INITIALIZED);
 
@@ -168,6 +175,8 @@ int mm_radio_realize(MMHandleType hradio)
 
 	MMRADIO_CMD_UNLOCK( radio );
 
+	MMRADIO_LOG_FLEAVE();
+
 	return result;
 }
 
@@ -176,7 +185,7 @@ int mm_radio_unrealize(MMHandleType hradio)
 	int result = MM_ERROR_NONE;
 	mm_radio_t* radio = (mm_radio_t*)hradio;
 	
-	debug_log("\n");
+	MMRADIO_LOG_FENTER();
 
 	return_val_if_fail(radio, MM_ERROR_RADIO_NOT_INITIALIZED);
 
@@ -187,6 +196,8 @@ int mm_radio_unrealize(MMHandleType hradio)
 	)
 	
 	MMRADIO_CMD_UNLOCK( radio );
+
+	MMRADIO_LOG_FLEAVE();
 	
 	return result;
 }
@@ -196,7 +207,7 @@ int mm_radio_set_message_callback(MMHandleType hradio, MMMessageCallback callbac
 	int result = MM_ERROR_NONE;
 	mm_radio_t* radio = (mm_radio_t*)hradio;
 	
-	debug_log("\n");
+	MMRADIO_LOG_FENTER();
 
 	return_val_if_fail(radio, MM_ERROR_RADIO_NOT_INITIALIZED);
 
@@ -205,6 +216,8 @@ int mm_radio_set_message_callback(MMHandleType hradio, MMMessageCallback callbac
 	result = _mmradio_set_message_callback( radio, callback, user_param );
 
 	MMRADIO_CMD_UNLOCK( radio );
+
+	MMRADIO_LOG_FLEAVE();
 	
 	return result;
 }
@@ -215,7 +228,7 @@ int mm_radio_get_state(MMHandleType hradio, MMRadioStateType* pState)
 	mm_radio_t* radio = (mm_radio_t*)hradio;
 	int state = 0;
 	
-	debug_log("\n");
+	MMRADIO_LOG_FENTER();
 	
 	return_val_if_fail(radio, MM_ERROR_RADIO_NOT_INITIALIZED);
 	return_val_if_fail(pState, MM_ERROR_COMMON_INVALID_ARGUMENT);
@@ -228,6 +241,8 @@ int mm_radio_get_state(MMHandleType hradio, MMRadioStateType* pState)
 
 	MMRADIO_CMD_UNLOCK( radio );
 
+	MMRADIO_LOG_FLEAVE();
+
 	return result;
 }
 
@@ -235,9 +250,8 @@ int mm_radio_start(MMHandleType hradio)
 {
 	int result = MM_ERROR_NONE;
 	mm_radio_t* radio = (mm_radio_t*)hradio;
-	MMRadioOutputType path;
 	
-	debug_log("\n");
+	MMRADIO_LOG_FENTER();
 
 	return_val_if_fail(radio, MM_ERROR_RADIO_NOT_INITIALIZED);
 
@@ -248,6 +262,8 @@ int mm_radio_start(MMHandleType hradio)
 
 	MMRADIO_CMD_UNLOCK( radio );
 
+	MMRADIO_LOG_FLEAVE();
+
 	return result;
 }
 
@@ -256,7 +272,7 @@ int  mm_radio_stop(MMHandleType hradio)
 	int result = MM_ERROR_NONE;
 	mm_radio_t* radio = (mm_radio_t*)hradio;
 	
-	debug_log("\n");
+	MMRADIO_LOG_FENTER();
 
 	return_val_if_fail(radio, MM_ERROR_RADIO_NOT_INITIALIZED);
 
@@ -268,6 +284,8 @@ int  mm_radio_stop(MMHandleType hradio)
 
 	MMRADIO_CMD_UNLOCK( radio );
 
+	MMRADIO_LOG_FLEAVE();
+
 	return result;
 }
 
@@ -276,7 +294,7 @@ int mm_radio_seek(MMHandleType hradio, MMRadioSeekDirectionType direction)
 	int result = MM_ERROR_NONE;
 	mm_radio_t* radio = (mm_radio_t*)hradio;
 
-	debug_log("\n");
+	MMRADIO_LOG_FENTER();
 
 	return_val_if_fail(radio, MM_ERROR_RADIO_NOT_INITIALIZED);
 	return_val_if_fail(direction >= MM_RADIO_SEEK_UP && direction <= MM_RADIO_SEEK_DOWN, MM_ERROR_INVALID_ARGUMENT);	
@@ -287,6 +305,8 @@ int mm_radio_seek(MMHandleType hradio, MMRadioSeekDirectionType direction)
 
 	MMRADIO_CMD_UNLOCK( radio );
 
+	MMRADIO_LOG_FLEAVE();
+
 	return result;
 }
 
@@ -295,7 +315,7 @@ int mm_radio_set_frequency(MMHandleType hradio, int freq)
 	int result = MM_ERROR_NONE;
 	mm_radio_t* radio = (mm_radio_t*)hradio;
 
-	debug_log("\n");
+	MMRADIO_LOG_FENTER();
 
 	return_val_if_fail(radio, MM_ERROR_RADIO_NOT_INITIALIZED);
 
@@ -304,6 +324,8 @@ int mm_radio_set_frequency(MMHandleType hradio, int freq)
 	result = _mmradio_set_frequency( radio, freq );
 
 	MMRADIO_CMD_UNLOCK( radio );
+
+	MMRADIO_LOG_FLEAVE();
 
 	return result;
 }
@@ -314,7 +336,7 @@ int mm_radio_get_frequency(MMHandleType hradio, int* pFreq)
 	mm_radio_t* radio = (mm_radio_t*)hradio;
 	int freq = 0;
 
-	debug_log("\n");
+	MMRADIO_LOG_FENTER();
 
 	return_val_if_fail(radio, MM_ERROR_RADIO_NOT_INITIALIZED);
 	return_val_if_fail(pFreq, MM_ERROR_INVALID_ARGUMENT);
@@ -327,6 +349,8 @@ int mm_radio_get_frequency(MMHandleType hradio, int* pFreq)
 
 	MMRADIO_CMD_UNLOCK( radio );
 
+	MMRADIO_LOG_FLEAVE();
+
 	return result;
 }
 
@@ -335,7 +359,7 @@ int mm_radio_scan_start(MMHandleType hradio)
 	int result = MM_ERROR_NONE;
 	mm_radio_t* radio = (mm_radio_t*)hradio;
 
-	debug_log("\n");
+	MMRADIO_LOG_FENTER();
 
 	return_val_if_fail(radio, MM_ERROR_RADIO_NOT_INITIALIZED);
 
@@ -345,6 +369,8 @@ int mm_radio_scan_start(MMHandleType hradio)
 
 	MMRADIO_CMD_UNLOCK( radio );
 
+	MMRADIO_LOG_FLEAVE();
+
 	return result;
 }
 
@@ -353,7 +379,7 @@ int mm_radio_scan_stop(MMHandleType hradio)
 	int result = MM_ERROR_NONE;
 	mm_radio_t* radio = (mm_radio_t*)hradio;
 
-	debug_log("\n");
+	MMRADIO_LOG_FENTER();
 
 	return_val_if_fail(radio, MM_ERROR_RADIO_NOT_INITIALIZED);
 
@@ -363,33 +389,7 @@ int mm_radio_scan_stop(MMHandleType hradio)
 
 	MMRADIO_CMD_UNLOCK( radio );
 
-	return result;
-}
-
-int mm_radio_set_sound_path(MMHandleType hradio, MMRadioOutputType path)
-{
-	int result = MM_ERROR_NONE;
-	mm_radio_t* radio = (mm_radio_t*)hradio;
-	int radio_state = MM_RADIO_STATE_NULL;
-
-	debug_log("\n");
-
-	return_val_if_fail(radio, MM_ERROR_RADIO_NOT_INITIALIZED);
-	return_val_if_fail(path >= MM_RADIO_OUTPUT_AUTO && path <= MM_RADIO_OUTPUT_HEADSET, MM_ERROR_INVALID_ARGUMENT);
-
-	return result;
-}
-
-int mm_radio_get_sound_path(MMHandleType hradio, MMRadioOutputType* pPath)
-{
-	int result = MM_ERROR_NONE;
-	mm_radio_t* radio = (mm_radio_t*)hradio;
-	MMRadioOutputType path = 0;
-
-	debug_log("\n");
-
-	return_val_if_fail(radio, MM_ERROR_RADIO_NOT_INITIALIZED);
-	return_val_if_fail(pPath, MM_ERROR_INVALID_ARGUMENT);
+	MMRADIO_LOG_FLEAVE();
 
 	return result;
 }
@@ -399,7 +399,7 @@ int mm_radio_set_mute(MMHandleType hradio, bool muted)
 	int result = MM_ERROR_NONE;
 	mm_radio_t* radio = (mm_radio_t*)hradio;
 
-	debug_log("\n");
+	MMRADIO_LOG_FENTER();
 
 	return_val_if_fail(radio, MM_ERROR_RADIO_NOT_INITIALIZED);
 
@@ -416,6 +416,8 @@ int mm_radio_set_mute(MMHandleType hradio, bool muted)
 
 	MMRADIO_CMD_UNLOCK(radio);
 
+	MMRADIO_LOG_FLEAVE();
+
 	return result;
 }
 
@@ -424,7 +426,7 @@ int mm_radio_get_signal_strength(MMHandleType hradio, int *value)
 	return_val_if_fail(hradio, MM_ERROR_RADIO_NOT_INITIALIZED);
 	return_val_if_fail(value, MM_ERROR_INVALID_ARGUMENT);
 
-	debug_log("\n");
+	MMRADIO_LOG_FENTER();
 
 	int ret = MM_ERROR_NONE;
 
@@ -439,14 +441,56 @@ int mm_radio_get_signal_strength(MMHandleType hradio, int *value)
 		return MM_ERROR_RADIO_INTERNAL;
 	}
 
-	usleep(SAMPLEDELAY);
-
 	*value = radio->vt.signal;
 
 	MMRADIO_CMD_UNLOCK( radio );
 
-	debug_log("signal strength = %d\n", *value);
+	MMRADIO_LOG_DEBUG("signal strength = %d\n", *value);
+	MMRADIO_LOG_FLEAVE();
 
 	return ret;
+}
+
+int mm_radio_get_region_type(MMHandleType hradio, MMRadioRegionType *type)
+{
+	MMRADIO_LOG_FENTER();
+	return_val_if_fail(hradio, MM_ERROR_RADIO_NOT_INITIALIZED);
+	return_val_if_fail(type, MM_ERROR_INVALID_ARGUMENT);
+
+	int result = MM_ERROR_NONE;
+	mm_radio_t* radio = (mm_radio_t*)hradio;
+	MMRadioRegionType cur_type = MM_RADIO_REGION_GROUP_NONE;
+
+	result = _mmradio_get_region_type(radio, &cur_type);
+
+	if (result == MM_ERROR_NONE)
+		*type = cur_type;
+
+	MMRADIO_LOG_FLEAVE();
+	return result;
+}
+
+int mm_radio_get_region_frequency_range(MMHandleType hradio, unsigned int *min, unsigned int*max)
+{
+	MMRADIO_LOG_FENTER();
+
+	return_val_if_fail(hradio, MM_ERROR_RADIO_NOT_INITIALIZED);
+	return_val_if_fail(min && max, MM_ERROR_INVALID_ARGUMENT);
+
+	int result = MM_ERROR_NONE;
+	mm_radio_t* radio = (mm_radio_t*)hradio;
+	unsigned int min_freq = 0;
+	unsigned int max_freq = 0;
+
+	result = _mmradio_get_region_frequency_range(radio, &min_freq, &max_freq);
+
+	if (result == MM_ERROR_NONE)
+	{
+		*min = min_freq;
+		*max = max_freq;
+	}
+
+	MMRADIO_LOG_FLEAVE();
+	return result;
 }
 

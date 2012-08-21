@@ -1,9 +1,9 @@
 Name:       libmm-radio
 Summary:    Multimedia Framework Radio Library
-Version:    0.1.2
+Version:    0.2.3
 Release:    1
-Group:      System/Libraries
-License:    Apache-2.0
+Group:      TO_BE/FILLED_IN
+License:    TO BE FILLED IN
 Source0:    %{name}-%{version}.tar.gz
 Requires(post): /sbin/ldconfig
 Requires(postun): /sbin/ldconfig
@@ -13,8 +13,8 @@ BuildRequires:  pkgconfig(mm-log)
 BuildRequires:  pkgconfig(mm-ta)
 BuildRequires:  pkgconfig(mm-session)
 BuildRequires:  pkgconfig(mm-sound)
-BuildRequires:  pkgconfig(avsystem)
-
+BuildRequires:  pkgconfig(gstreamer-0.10)
+BuildRequires:  pkgconfig(gstreamer-plugins-base-0.10)
 
 %description
 Descirption: Multimedia Framework Radio Library
@@ -39,6 +39,7 @@ CFLAGS=" %{optflags}  -DGST_EXT_TIME_ANALYSIS -DEXPORT_API=\"__attribute__((visi
 make %{?jobs:-j%jobs}
 
 %install
+rm -rf %{buildroot}
 %make_install
 
 
@@ -59,5 +60,3 @@ make %{?jobs:-j%jobs}
 %{_libdir}/libmmfradio.so
 %{_libdir}/pkgconfig/mm-radio.pc
 %{_includedir}/mmf/mm_radio.h
-
-

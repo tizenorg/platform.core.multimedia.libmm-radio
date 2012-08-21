@@ -61,15 +61,23 @@ typedef enum {
 } MMRadioSeekDirectionType;
 
 /**
- * Enumerations of output sound path.
+ * Enumerations of radio region country
+ * Region settings are according to radio standards, not real geographic regions.
+ * MM_RADIO_REGION_GROUP_1 : Notrh America, South America, South Korea, Taiwan, Australia
+ * frequency details : 88.1 - 108MHz, 75uS de-emphasis
+ *
+ * MM_RADIO_REGION_GROUP_2 : China, Europe, Africa, Middle East, Hong Kong, India, Indonesia, Russia, Singapore
+ * frequency details : 87.5 - 108MHz, 50uS de-emphasis
+ *
+ * MM_RADIO_REGION_GROUP_3 : Japan alone currenlty
+ * frequency details : 76.1 - 89.9MHz, 50uS de-emphasis
  */
 typedef enum {
-	MM_RADIO_OUTPUT_NONE,			/**< Output None */
-	MM_RADIO_OUTPUT_AUTO,			/**< Automatic output mode, but not used yet */
-	MM_RADIO_OUTPUT_SPEAKER,			/**< Speaker output */
-	MM_RADIO_OUTPUT_HEADSET,		/**< Headset output */
-	MM_RADIO_OUTPUT_NUM,				/**< Number of output sound path */
-} MMRadioOutputType;
+	MM_RADIO_REGION_GROUP_NONE = 0,	/**< Region None */
+	MM_RADIO_REGION_GROUP_USA,		/**< Region USA group */
+	MM_RADIO_REGION_GROUP_EUROPE,	/**< Region EUROPE group */
+	MM_RADIO_REGION_GROUP_JAPAN,		/**< Region Japan group */
+} MMRadioRegionType;
 
 /**
  * This function creates a radio handle. \n
@@ -121,7 +129,6 @@ int __menu(void)
 	printf("[12] mm_radio_get_frequency\n");
 	printf("[13] mm_radio_scan_start\n");
 	printf("[14] mm_radio_scan_stop\n");
-	printf("[15] mm_radio_set_sound_path\n");
 	printf("[0] quit\n");
 	printf("---------------------------------------------------------\n");
 	printf("choose one : ");
@@ -263,15 +270,6 @@ void __call_api( int choosen )
 		case 14:
 		{
 			RADIO_TEST__( mm_radio_scan_stop(g_my_radio); )
-		}
-		break;
-
-		case 15:
-		{
-			MMRadioOutputType path = 0;
-			printf("input path(0:NONE/1:AUTO/2:SPK/3:EAR) : ");
-			scanf("%d", &path);
-			RADIO_TEST__( mm_radio_set_sound_path(g_my_radio, path); )
 		}
 		break;
 
@@ -351,7 +349,6 @@ int __menu(void)
 	printf("[12] mm_radio_get_frequency\n");
 	printf("[13] mm_radio_scan_start\n");
 	printf("[14] mm_radio_scan_stop\n");
-	printf("[15] mm_radio_set_sound_path\n");
 	printf("[0] quit\n");
 	printf("---------------------------------------------------------\n");
 	printf("choose one : ");
@@ -493,15 +490,6 @@ void __call_api( int choosen )
 		case 14:
 		{
 			RADIO_TEST__( mm_radio_scan_stop(g_my_radio); )
-		}
-		break;
-
-		case 15:
-		{
-			MMRadioOutputType path = 0;
-			printf("input path(0:NONE/1:AUTO/2:SPK/3:EAR) : ");
-			scanf("%d", &path);
-			RADIO_TEST__( mm_radio_set_sound_path(g_my_radio, path); )
 		}
 		break;
 
@@ -580,7 +568,6 @@ int __menu(void)
 	printf("[12] mm_radio_get_frequency\n");
 	printf("[13] mm_radio_scan_start\n");
 	printf("[14] mm_radio_scan_stop\n");
-	printf("[15] mm_radio_set_sound_path\n");
 	printf("[0] quit\n");
 	printf("---------------------------------------------------------\n");
 	printf("choose one : ");
@@ -722,15 +709,6 @@ void __call_api( int choosen )
 		case 14:
 		{
 			RADIO_TEST__( mm_radio_scan_stop(g_my_radio); )
-		}
-		break;
-
-		case 15:
-		{
-			MMRadioOutputType path = 0;
-			printf("input path(0:NONE/1:AUTO/2:SPK/3:EAR) : ");
-			scanf("%d", &path);
-			RADIO_TEST__( mm_radio_set_sound_path(g_my_radio, path); )
 		}
 		break;
 
@@ -810,7 +788,6 @@ int __menu(void)
 	printf("[12] mm_radio_get_frequency\n");
 	printf("[13] mm_radio_scan_start\n");
 	printf("[14] mm_radio_scan_stop\n");
-	printf("[15] mm_radio_set_sound_path\n");
 	printf("[0] quit\n");
 	printf("---------------------------------------------------------\n");
 	printf("choose one : ");
@@ -952,15 +929,6 @@ void __call_api( int choosen )
 		case 14:
 		{
 			RADIO_TEST__( mm_radio_scan_stop(g_my_radio); )
-		}
-		break;
-
-		case 15:
-		{
-			MMRadioOutputType path = 0;
-			printf("input path(0:NONE/1:AUTO/2:SPK/3:EAR) : ");
-			scanf("%d", &path);
-			RADIO_TEST__( mm_radio_set_sound_path(g_my_radio, path); )
 		}
 		break;
 
@@ -1041,7 +1009,6 @@ int __menu(void)
 	printf("[12] mm_radio_get_frequency\n");
 	printf("[13] mm_radio_scan_start\n");
 	printf("[14] mm_radio_scan_stop\n");
-	printf("[15] mm_radio_set_sound_path\n");
 	printf("[0] quit\n");
 	printf("---------------------------------------------------------\n");
 	printf("choose one : ");
@@ -1183,15 +1150,6 @@ void __call_api( int choosen )
 		case 14:
 		{
 			RADIO_TEST__( mm_radio_scan_stop(g_my_radio); )
-		}
-		break;
-
-		case 15:
-		{
-			MMRadioOutputType path = 0;
-			printf("input path(0:NONE/1:AUTO/2:SPK/3:EAR) : ");
-			scanf("%d", &path);
-			RADIO_TEST__( mm_radio_set_sound_path(g_my_radio, path); )
 		}
 		break;
 
@@ -1271,7 +1229,6 @@ int __menu(void)
 	printf("[12] mm_radio_get_frequency\n");
 	printf("[13] mm_radio_scan_start\n");
 	printf("[14] mm_radio_scan_stop\n");
-	printf("[15] mm_radio_set_sound_path\n");
 	printf("[0] quit\n");
 	printf("---------------------------------------------------------\n");
 	printf("choose one : ");
@@ -1413,15 +1370,6 @@ void __call_api( int choosen )
 		case 14:
 		{
 			RADIO_TEST__( mm_radio_scan_stop(g_my_radio); )
-		}
-		break;
-
-		case 15:
-		{
-			MMRadioOutputType path = 0;
-			printf("input path(0:NONE/1:AUTO/2:SPK/3:EAR) : ");
-			scanf("%d", &path);
-			RADIO_TEST__( mm_radio_set_sound_path(g_my_radio, path); )
 		}
 		break;
 
@@ -1500,7 +1448,6 @@ int __menu(void)
 	printf("[12] mm_radio_get_frequency\n");
 	printf("[13] mm_radio_scan_start\n");
 	printf("[14] mm_radio_scan_stop\n");
-	printf("[15] mm_radio_set_sound_path\n");
 	printf("[0] quit\n");
 	printf("---------------------------------------------------------\n");
 	printf("choose one : ");
@@ -1642,15 +1589,6 @@ void __call_api( int choosen )
 		case 14:
 		{
 			RADIO_TEST__( mm_radio_scan_stop(g_my_radio); )
-		}
-		break;
-
-		case 15:
-		{
-			MMRadioOutputType path = 0;
-			printf("input path(0:NONE/1:AUTO/2:SPK/3:EAR) : ");
-			scanf("%d", &path);
-			RADIO_TEST__( mm_radio_set_sound_path(g_my_radio, path); )
 		}
 		break;
 
@@ -1730,7 +1668,6 @@ int __menu(void)
 	printf("[12] mm_radio_get_frequency\n");
 	printf("[13] mm_radio_scan_start\n");
 	printf("[14] mm_radio_scan_stop\n");
-	printf("[15] mm_radio_set_sound_path\n");
 	printf("[0] quit\n");
 	printf("---------------------------------------------------------\n");
 	printf("choose one : ");
@@ -1872,15 +1809,6 @@ void __call_api( int choosen )
 		case 14:
 		{
 			RADIO_TEST__( mm_radio_scan_stop(g_my_radio); )
-		}
-		break;
-
-		case 15:
-		{
-			MMRadioOutputType path = 0;
-			printf("input path(0:NONE/1:AUTO/2:SPK/3:EAR) : ");
-			scanf("%d", &path);
-			RADIO_TEST__( mm_radio_set_sound_path(g_my_radio, path); )
 		}
 		break;
 
@@ -1968,7 +1896,6 @@ int __menu(void)
 	printf("[12] mm_radio_get_frequency\n");
 	printf("[13] mm_radio_scan_start\n");
 	printf("[14] mm_radio_scan_stop\n");
-	printf("[15] mm_radio_set_sound_path\n");
 	printf("[0] quit\n");
 	printf("---------------------------------------------------------\n");
 	printf("choose one : ");
@@ -2110,15 +2037,6 @@ void __call_api( int choosen )
 		case 14:
 		{
 			RADIO_TEST__( mm_radio_scan_stop(g_my_radio); )
-		}
-		break;
-
-		case 15:
-		{
-			MMRadioOutputType path = 0;
-			printf("input path(0:NONE/1:AUTO/2:SPK/3:EAR) : ");
-			scanf("%d", &path);
-			RADIO_TEST__( mm_radio_set_sound_path(g_my_radio, path); )
 		}
 		break;
 
@@ -2199,7 +2117,6 @@ int __menu(void)
 	printf("[12] mm_radio_get_frequency\n");
 	printf("[13] mm_radio_scan_start\n");
 	printf("[14] mm_radio_scan_stop\n");
-	printf("[15] mm_radio_set_sound_path\n");
 	printf("[0] quit\n");
 	printf("---------------------------------------------------------\n");
 	printf("choose one : ");
@@ -2341,15 +2258,6 @@ void __call_api( int choosen )
 		case 14:
 		{
 			RADIO_TEST__( mm_radio_scan_stop(g_my_radio); )
-		}
-		break;
-
-		case 15:
-		{
-			MMRadioOutputType path = 0;
-			printf("input path(0:NONE/1:AUTO/2:SPK/3:EAR) : ");
-			scanf("%d", &path);
-			RADIO_TEST__( mm_radio_set_sound_path(g_my_radio, path); )
 		}
 		break;
 
@@ -2430,7 +2338,6 @@ int __menu(void)
 	printf("[12] mm_radio_get_frequency\n");
 	printf("[13] mm_radio_scan_start\n");
 	printf("[14] mm_radio_scan_stop\n");
-	printf("[15] mm_radio_set_sound_path\n");
 	printf("[0] quit\n");
 	printf("---------------------------------------------------------\n");
 	printf("choose one : ");
@@ -2572,15 +2479,6 @@ void __call_api( int choosen )
 		case 14:
 		{
 			RADIO_TEST__( mm_radio_scan_stop(g_my_radio); )
-		}
-		break;
-
-		case 15:
-		{
-			MMRadioOutputType path = 0;
-			printf("input path(0:NONE/1:AUTO/2:SPK/3:EAR) : ");
-			scanf("%d", &path);
-			RADIO_TEST__( mm_radio_set_sound_path(g_my_radio, path); )
 		}
 		break;
 
@@ -2663,7 +2561,6 @@ int __menu(void)
 	printf("[12] mm_radio_get_frequency\n");
 	printf("[13] mm_radio_scan_start\n");
 	printf("[14] mm_radio_scan_stop\n");
-	printf("[15] mm_radio_set_sound_path\n");
 	printf("[0] quit\n");
 	printf("---------------------------------------------------------\n");
 	printf("choose one : ");
@@ -2805,15 +2702,6 @@ void __call_api( int choosen )
 		case 14:
 		{
 			RADIO_TEST__( mm_radio_scan_stop(g_my_radio); )
-		}
-		break;
-
-		case 15:
-		{
-			MMRadioOutputType path = 0;
-			printf("input path(0:NONE/1:AUTO/2:SPK/3:EAR) : ");
-			scanf("%d", &path);
-			RADIO_TEST__( mm_radio_set_sound_path(g_my_radio, path); )
 		}
 		break;
 
@@ -2894,7 +2782,6 @@ int __menu(void)
 	printf("[12] mm_radio_get_frequency\n");
 	printf("[13] mm_radio_scan_start\n");
 	printf("[14] mm_radio_scan_stop\n");
-	printf("[15] mm_radio_set_sound_path\n");
 	printf("[0] quit\n");
 	printf("---------------------------------------------------------\n");
 	printf("choose one : ");
@@ -3036,15 +2923,6 @@ void __call_api( int choosen )
 		case 14:
 		{
 			RADIO_TEST__( mm_radio_scan_stop(g_my_radio); )
-		}
-		break;
-
-		case 15:
-		{
-			MMRadioOutputType path = 0;
-			printf("input path(0:NONE/1:AUTO/2:SPK/3:EAR) : ");
-			scanf("%d", &path);
-			RADIO_TEST__( mm_radio_set_sound_path(g_my_radio, path); )
 		}
 		break;
 
@@ -3075,468 +2953,6 @@ int main(int argc, char **argv)
  * @endcode 
  */
 int mm_radio_scan_stop(MMHandleType hradio);
-
-/**
- * This function sets the sound path.
- *
- * @param	hradio		[in]	Handle of radio.
- * @param	path		[in]	Output sound path to set.
- *
- * @return	This function returns zero on success, or negative value with errors
- * @pre		None
- * @post 	None
- * @remark	None
- * @see		mm_radio_get_sound_path
- * @par		Example
- * @code
-#include <stdlib.h>
-#include <stdio.h>
-#include <mm_radio.h>
-
-#define RADIO_TEST__(x_test)	\
-		ret = x_test	\
-		if ( ! ret )	\
-		{	\
-			printf("PASS : %s -- %s:%d\n", #x_test, __FILE__, __LINE__);	\
-		}	\
-		else	\
-		{	\
-			printf("FAIL : %s ERR-CODE : %d -- %s:%d\n", #x_test, ret, __FILE__, __LINE__);	\
-		}
-
-static MMHandleType g_my_radio = 0;
-
-int __menu(void)
-{
-	int menu_item = 0;
-
-	printf("---------------------------------------------------------\n");
-	printf("mm-radio rt api test. try now!\n");
-	printf("---------------------------------------------------------\n");
-	printf("[1] mm_radio_create\n");
-	printf("[2] mm_radio_destroy\n");
-	printf("[3] mm_radio_realize\n");
-	printf("[4] mm_radio_unrealize\n");
-	printf("[7] mm_radio_get_state\n");
-	printf("[8] mm_radio_start\n");
-	printf("[9] mm_radio_stop\n");
-	printf("[10] mm_radio_seek\n");
-	printf("[11] mm_radio_set_frequency\n");
-	printf("[12] mm_radio_get_frequency\n");
-	printf("[13] mm_radio_scan_start\n");
-	printf("[14] mm_radio_scan_stop\n");
-	printf("[15] mm_radio_set_sound_path\n");
-	printf("[0] quit\n");
-	printf("---------------------------------------------------------\n");
-	printf("choose one : ");
-	scanf("%d", &menu_item);
-
-	if ( menu_item > 15 )
-		menu_item = -1;
-
-	return menu_item;
-}
-
-int __msg_rt_callback(int message, void *pParam, void *user_param)
-{
-	MMMessageParamType* param = (MMMessageParamType*)pParam;
-	int ret = 0;
-
-	printf("incomming message : %d\n", message);
-
-	switch(message)
-	{
-	case MM_MESSAGE_STATE_CHANGED:
-
-		printf("MM_MESSAGE_STATE_CHANGED: current : %d    old : %d\n"
-				, param->state.current, param->state.previous);
-		break;
-	case MM_MESSAGE_RADIO_SCAN_START:
-		printf("MM_MESSAGE_RADIO_SCAN_START\n");
-		break;
-	case MM_MESSAGE_RADIO_SCAN_INFO:
-		assert(param);
-		printf("MM_MESSAGE_RADIO_SCAN_INFO : freq : %d\n", param->radio_scan.frequency);
-		break;
-	case MM_MESSAGE_RADIO_SCAN_STOP:
-		printf("MM_MESSAGE_RADIO_SCAN_STOP\n");
-		break;
-	case MM_MESSAGE_RADIO_SCAN_FINISH:
-		printf("MM_MESSAGE_RADIO_SCAN_FINISHED\n");
-		break;
-	case MM_MESSAGE_RADIO_SEEK_START:
-		printf("MM_MESSAGE_RADIO_SEEK_START\n");
-		break;
-	case MM_MESSAGE_RADIO_SEEK_FINISH:
-		printf("MM_MESSAGE_RADIO_SEEK_FINISHED : freq : %d\n", param->radio_scan.frequency);
-		break;
-	default:
-		printf("ERROR : unknown message received!\n");
-		break;
-	}
-
-	return true;
-}
-
-void __call_api( int choosen )
-{
-	int ret = MM_ERROR_NONE;
-
-	switch( choosen )
-	{
-		case 1:
-		{
-			RADIO_TEST__( mm_radio_create( &g_my_radio ); )
-			RADIO_TEST__( mm_radio_set_message_callback( g_my_radio, __msg_rt_callback, &g_my_radio); )
-		}
-		break;
-
-		case 2:
-		{
-			RADIO_TEST__( mm_radio_destroy( g_my_radio ); )
-			g_my_radio = 0;
-		}
-		break;
-
-		case 3:
-		{
-			RADIO_TEST__( mm_radio_realize(g_my_radio ); )
-		}
-		break;
-
-		case 4:
-		{
-			RADIO_TEST__( mm_radio_unrealize(g_my_radio ); )
-		}
-		break;
-
-		case 7:
-		{
-			MMRadioStateType state = 0;
-			RADIO_TEST__( mm_radio_get_state(g_my_radio, &state); )
-
-			printf("state : %d\n", state);
-		}
-		break;
-
-		case 8:
-		{
-			RADIO_TEST__( mm_radio_start(g_my_radio); )
-		}
-		break;
-
-		case 9:
-		{
-			RADIO_TEST__( mm_radio_stop(g_my_radio); )
-		}
-		break;
-
-		case 10:
-		{
-			MMRadioSeekDirectionType direction = 0;
-			printf("input seek direction(0:UP/1:DOWN) : ");
-			scanf("%d", &direction);
-			RADIO_TEST__( mm_radio_seek(g_my_radio, direction); )
-		}
-		break;
-
-		case 11:
-		{
-			int freq = 0;
-			printf("input freq : ");
-			scanf("%d", &freq);
-			RADIO_TEST__( mm_radio_set_frequency(g_my_radio, freq); )
-		}
-		break;
-
-		case 12:
-		{
-			int freq = 0;
-			RADIO_TEST__( mm_radio_get_frequency(g_my_radio, &freq ); )
-
-			printf("freq : %d\n", freq);
-		}
-		break;
-
-		case 13:
-		{
-			RADIO_TEST__( mm_radio_scan_start(g_my_radio); )
-		}
-		break;
-
-		case 14:
-		{
-			RADIO_TEST__( mm_radio_scan_stop(g_my_radio); )
-		}
-		break;
-
-		case 15:
-		{
-			MMRadioOutputType path = 0;
-			printf("input path(0:NONE/1:AUTO/2:SPK/3:EAR) : ");
-			scanf("%d", &path);
-			RADIO_TEST__( mm_radio_set_sound_path(g_my_radio, path); )
-		}
-		break;
-
-		default:
-			break;
-	}
-}
-
-int main(int argc, char **argv)
-{
-	while(1)
-	{
-		char key = 0;
-		int choosen = 0;
-
-		choosen = __menu();
-
-		if ( choosen == -1)
-			continue;
-
-		if ( choosen == 0 )
-			break;
-
-		__call_api( choosen );
-	}
-}
-
- * @endcode 
- */
-int mm_radio_set_sound_path(MMHandleType hradio, MMRadioOutputType path)__attribute__ ((deprecated));
-
-/**
- * This function gets the sound path.
- *
- * @param	hradio		[in]	Handle of radio.
- * @param	pPath		[out]	Current output sound path.
- *
- * @return	This function returns zero on success, or negative value with errors
- * @pre		None
- * @post 	None
- * @remark	None
- * @see		mm_radio_set_sound_path
- * @par		Example
- * @code
-#include <stdlib.h>
-#include <stdio.h>
-#include <mm_radio.h>
-
-#define RADIO_TEST__(x_test)	\
-		ret = x_test	\
-		if ( ! ret )	\
-		{	\
-			printf("PASS : %s -- %s:%d\n", #x_test, __FILE__, __LINE__);	\
-		}	\
-		else	\
-		{	\
-			printf("FAIL : %s ERR-CODE : %d -- %s:%d\n", #x_test, ret, __FILE__, __LINE__);	\
-		}
-
-static MMHandleType g_my_radio = 0;
-
-int __menu(void)
-{
-	int menu_item = 0;
-
-	printf("---------------------------------------------------------\n");
-	printf("mm-radio rt api test. try now!\n");
-	printf("---------------------------------------------------------\n");
-	printf("[1] mm_radio_create\n");
-	printf("[2] mm_radio_destroy\n");
-	printf("[3] mm_radio_realize\n");
-	printf("[4] mm_radio_unrealize\n");
-	printf("[7] mm_radio_get_state\n");
-	printf("[8] mm_radio_start\n");
-	printf("[9] mm_radio_stop\n");
-	printf("[10] mm_radio_seek\n");
-	printf("[11] mm_radio_set_frequency\n");
-	printf("[12] mm_radio_get_frequency\n");
-	printf("[13] mm_radio_scan_start\n");
-	printf("[14] mm_radio_scan_stop\n");
-	printf("[15] mm_radio_set_sound_path\n");
-	printf("[0] quit\n");
-	printf("---------------------------------------------------------\n");
-	printf("choose one : ");
-	scanf("%d", &menu_item);
-
-	if ( menu_item > 15 )
-		menu_item = -1;
-
-	return menu_item;
-}
-
-int __msg_rt_callback(int message, void *pParam, void *user_param)
-{
-	MMMessageParamType* param = (MMMessageParamType*)pParam;
-	int ret = 0;
-
-	printf("incomming message : %d\n", message);
-
-	switch(message)
-	{
-	case MM_MESSAGE_STATE_CHANGED:
-
-		printf("MM_MESSAGE_STATE_CHANGED: current : %d    old : %d\n"
-				, param->state.current, param->state.previous);
-		break;
-	case MM_MESSAGE_RADIO_SCAN_START:
-		printf("MM_MESSAGE_RADIO_SCAN_START\n");
-		break;
-	case MM_MESSAGE_RADIO_SCAN_INFO:
-		assert(param);
-		printf("MM_MESSAGE_RADIO_SCAN_INFO : freq : %d\n", param->radio_scan.frequency);
-		break;
-	case MM_MESSAGE_RADIO_SCAN_STOP:
-		printf("MM_MESSAGE_RADIO_SCAN_STOP\n");
-		break;
-	case MM_MESSAGE_RADIO_SCAN_FINISH:
-		printf("MM_MESSAGE_RADIO_SCAN_FINISHED\n");
-		break;
-	case MM_MESSAGE_RADIO_SEEK_START:
-		printf("MM_MESSAGE_RADIO_SEEK_START\n");
-		break;
-	case MM_MESSAGE_RADIO_SEEK_FINISH:
-		printf("MM_MESSAGE_RADIO_SEEK_FINISHED : freq : %d\n", param->radio_scan.frequency);
-		break;
-	default:
-		printf("ERROR : unknown message received!\n");
-		break;
-	}
-
-	return true;
-}
-
-void __call_api( int choosen )
-{
-	int ret = MM_ERROR_NONE;
-
-	switch( choosen )
-	{
-		case 1:
-		{
-			RADIO_TEST__( mm_radio_create( &g_my_radio ); )
-			RADIO_TEST__( mm_radio_set_message_callback( g_my_radio, __msg_rt_callback, &g_my_radio); )
-		}
-		break;
-
-		case 2:
-		{
-			RADIO_TEST__( mm_radio_destroy( g_my_radio ); )
-			g_my_radio = 0;
-		}
-		break;
-
-		case 3:
-		{
-			RADIO_TEST__( mm_radio_realize(g_my_radio ); )
-		}
-		break;
-
-		case 4:
-		{
-			RADIO_TEST__( mm_radio_unrealize(g_my_radio ); )
-		}
-		break;
-
-		case 7:
-		{
-			MMRadioStateType state = 0;
-			RADIO_TEST__( mm_radio_get_state(g_my_radio, &state); )
-
-			printf("state : %d\n", state);
-		}
-		break;
-
-		case 8:
-		{
-			RADIO_TEST__( mm_radio_start(g_my_radio); )
-		}
-		break;
-
-		case 9:
-		{
-			RADIO_TEST__( mm_radio_stop(g_my_radio); )
-		}
-		break;
-
-		case 10:
-		{
-			MMRadioSeekDirectionType direction = 0;
-			printf("input seek direction(0:UP/1:DOWN) : ");
-			scanf("%d", &direction);
-			RADIO_TEST__( mm_radio_seek(g_my_radio, direction); )
-		}
-		break;
-
-		case 11:
-		{
-			int freq = 0;
-			printf("input freq : ");
-			scanf("%d", &freq);
-			RADIO_TEST__( mm_radio_set_frequency(g_my_radio, freq); )
-		}
-		break;
-
-		case 12:
-		{
-			int freq = 0;
-			RADIO_TEST__( mm_radio_get_frequency(g_my_radio, &freq ); )
-
-			printf("freq : %d\n", freq);
-		}
-		break;
-
-		case 13:
-		{
-			RADIO_TEST__( mm_radio_scan_start(g_my_radio); )
-		}
-		break;
-
-		case 14:
-		{
-			RADIO_TEST__( mm_radio_scan_stop(g_my_radio); )
-		}
-		break;
-
-		case 15:
-		{
-			MMRadioOutputType path = 0;
-			printf("input path(0:NONE/1:AUTO/2:SPK/3:EAR) : ");
-			scanf("%d", &path);
-			RADIO_TEST__( mm_radio_set_sound_path(g_my_radio, path); )
-		}
-		break;
-
-		default:
-			break;
-	}
-}
-
-int main(int argc, char **argv)
-{
-	while(1)
-	{
-		char key = 0;
-		int choosen = 0;
-
-		choosen = __menu();
-
-		if ( choosen == -1)
-			continue;
-
-		if ( choosen == 0 )
-			break;
-
-		__call_api( choosen );
-	}
-}
-
- * @endcode 
- */
-int mm_radio_get_sound_path(MMHandleType hradio, MMRadioOutputType* pPath)__attribute__ ((deprecated));
 
 /**
  * This function is to mute/unmute radio output.
@@ -3587,7 +3003,6 @@ int __menu(void)
 	printf("[12] mm_radio_get_frequency\n");
 	printf("[13] mm_radio_scan_start\n");
 	printf("[14] mm_radio_scan_stop\n");
-	printf("[15] mm_radio_set_sound_path\n");
 	printf("[16] mm_radio_set_mute\n");	
 	printf("[0] quit\n");
 	printf("---------------------------------------------------------\n");
@@ -3733,15 +3148,6 @@ void __call_api( int choosen )
 		}
 		break;
 
-		case 15:
-		{
-			MMRadioOutputType path = 0;
-			printf("input path(0:NONE/1:AUTO/2:SPK/3:EAR) : ");
-			scanf("%d", &path);
-			RADIO_TEST__( mm_radio_set_sound_path(g_my_radio, path); )
-		}
-		break;
-
 		case 16:
 		{
 			bool muted = 0;
@@ -3777,10 +3183,264 @@ int main(int argc, char **argv)
  * @endcode 
  */
 int mm_radio_set_mute(MMHandleType hradio, bool muted);
+/**
+ * This function is get strength of radio signal.
+ *
+ * @param	hradio		[in]		Handle of radio.
+ * @param	value		[in]		signal strength
+ *
+ * @return	This function returns zero on success, or negative value with errors
+ * @pre		None
+ * @post 	None
+ * @remark	None
+ * @see
+ * @par		Example
+ * @code
+#include <stdlib.h>
+#include <stdio.h>
+#include <mm_radio.h>
 
+#define RADIO_TEST__(x_test)	\
+		ret = x_test	\
+		if ( ! ret )	\
+		{	\
+			printf("PASS : %s -- %s:%d\n", #x_test, __FILE__, __LINE__);	\
+		}	\
+		else	\
+		{	\
+			printf("FAIL : %s ERR-CODE : %d -- %s:%d\n", #x_test, ret, __FILE__, __LINE__);	\
+		}
+
+static MMHandleType g_my_radio = 0;
+
+int __menu(void)
+{
+	int menu_item = 0;
+
+	printf("---------------------------------------------------------\n");
+	printf("mm-radio rt api test. try now!\n");
+	printf("---------------------------------------------------------\n");
+	printf("[1] mm_radio_create\n");
+	printf("[2] mm_radio_destroy\n");
+	printf("[3] mm_radio_realize\n");
+	printf("[4] mm_radio_unrealize\n");
+	printf("[7] mm_radio_get_state\n");
+	printf("[8] mm_radio_start\n");
+	printf("[9] mm_radio_stop\n");
+	printf("[10] mm_radio_seek\n");
+	printf("[11] mm_radio_set_frequency\n");
+	printf("[12] mm_radio_get_frequency\n");
+	printf("[13] mm_radio_scan_start\n");
+	printf("[14] mm_radio_scan_stop\n");
+	printf("[16] mm_radio_set_mute\n");
+	printf("[0] quit\n");
+	printf("---------------------------------------------------------\n");
+	printf("choose one : ");
+	scanf("%d", &menu_item);
+
+	if ( menu_item > 16 )
+		menu_item = -1;
+
+	return menu_item;
+}
+
+int __msg_rt_callback(int message, void *pParam, void *user_param)
+{
+	MMMessageParamType* param = (MMMessageParamType*)pParam;
+	int ret = 0;
+
+	printf("incomming message : %d\n", message);
+
+	switch(message)
+	{
+	case MM_MESSAGE_STATE_CHANGED:
+
+		printf("MM_MESSAGE_STATE_CHANGED: current : %d    old : %d\n"
+				, param->state.current, param->state.previous);
+		break;
+	case MM_MESSAGE_RADIO_SCAN_START:
+		printf("MM_MESSAGE_RADIO_SCAN_START\n");
+		break;
+	case MM_MESSAGE_RADIO_SCAN_INFO:
+		assert(param);
+		printf("MM_MESSAGE_RADIO_SCAN_INFO : freq : %d\n", param->radio_scan.frequency);
+		break;
+	case MM_MESSAGE_RADIO_SCAN_STOP:
+		printf("MM_MESSAGE_RADIO_SCAN_STOP\n");
+		break;
+	case MM_MESSAGE_RADIO_SCAN_FINISH:
+		printf("MM_MESSAGE_RADIO_SCAN_FINISHED\n");
+		break;
+	case MM_MESSAGE_RADIO_SEEK_START:
+		printf("MM_MESSAGE_RADIO_SEEK_START\n");
+		break;
+	case MM_MESSAGE_RADIO_SEEK_FINISH:
+		printf("MM_MESSAGE_RADIO_SEEK_FINISHED : freq : %d\n", param->radio_scan.frequency);
+		break;
+	default:
+		printf("ERROR : unknown message received!\n");
+		break;
+	}
+
+	return true;
+}
+
+void __call_api( int choosen )
+{
+	int ret = MM_ERROR_NONE;
+
+	switch( choosen )
+	{
+		case 1:
+		{
+			RADIO_TEST__( mm_radio_create( &g_my_radio ); )
+			RADIO_TEST__( mm_radio_set_message_callback( g_my_radio, __msg_rt_callback, &g_my_radio); )
+		}
+		break;
+
+		case 2:
+		{
+			RADIO_TEST__( mm_radio_destroy( g_my_radio ); )
+			g_my_radio = 0;
+		}
+		break;
+
+		case 3:
+		{
+			RADIO_TEST__( mm_radio_realize(g_my_radio ); )
+		}
+		break;
+
+		case 4:
+		{
+			RADIO_TEST__( mm_radio_unrealize(g_my_radio ); )
+		}
+		break;
+
+		case 7:
+		{
+			MMRadioStateType state = 0;
+			RADIO_TEST__( mm_radio_get_state(g_my_radio, &state); )
+
+			printf("state : %d\n", state);
+		}
+		break;
+
+		case 8:
+		{
+			RADIO_TEST__( mm_radio_start(g_my_radio); )
+		}
+		break;
+
+		case 9:
+		{
+			RADIO_TEST__( mm_radio_stop(g_my_radio); )
+		}
+		break;
+
+		case 10:
+		{
+			MMRadioSeekDirectionType direction = 0;
+			printf("input seek direction(0:UP/1:DOWN) : ");
+			scanf("%d", &direction);
+			RADIO_TEST__( mm_radio_seek(g_my_radio, direction); )
+		}
+		break;
+
+		case 11:
+		{
+			int freq = 0;
+			printf("input freq : ");
+			scanf("%d", &freq);
+			RADIO_TEST__( mm_radio_set_frequency(g_my_radio, freq); )
+		}
+		break;
+
+		case 12:
+		{
+			int freq = 0;
+			RADIO_TEST__( mm_radio_get_frequency(g_my_radio, &freq ); )
+
+			printf("freq : %d\n", freq);
+		}
+		break;
+
+		case 13:
+		{
+			RADIO_TEST__( mm_radio_scan_start(g_my_radio); )
+		}
+		break;
+
+		case 14:
+		{
+			RADIO_TEST__( mm_radio_scan_stop(g_my_radio); )
+		}
+		break;
+
+		case 16:
+		{
+			bool muted = 0;
+			printf("select one(0:UNMUTE/1:MUTE) : ");
+			scanf("%d", &muted);
+			RADIO_TEST__( mm_radio_set_mute(g_my_radio, muted); )
+		}
+
+		default:
+			break;
+	}
+}
+
+int main(int argc, char **argv)
+{
+	while(1)
+	{
+		char key = 0;
+		int choosen = 0;
+
+		choosen = __menu();
+
+		if ( choosen == -1)
+			continue;
+
+		if ( choosen == 0 )
+			break;
+
+		__call_api( choosen );
+	}
+}
+
+ * @endcode
+ */
 int mm_radio_get_signal_strength(MMHandleType hradio, int *value);
 
+/**
+ * This function is to get type of radio region.
+ *
+ * @param	hradio		[in]		Handle of radio.
+ * @param	type		[out]		type of current region
+ *
+ * @return	This function returns zero on success, or negative value with errors
+ * @pre		None
+ * @post 	None
+ * @remark	None
+ * @see mm_radio_get_region_frequency_range()
+ */
+int mm_radio_get_region_type(MMHandleType hradio, MMRadioRegionType *type);
 
+/**
+ * This function is to get range of radio frequency.
+ *
+ * @param	hradio		[in]		Handle of radio.
+ * @param	min		[out]		min frequency value
+ * @param	max		[out]		max frequency value
+ *
+ * @return	This function returns zero on success, or negative value with errors
+ * @pre		None
+ * @post 	None
+ * @remark	 The unit of frequency is KHz.
+ * @see mm_radio_get_region_type()
+ */
+int mm_radio_get_region_frequency_range(MMHandleType hradio, unsigned int *min, unsigned int *max);
 
 /**
 	@}

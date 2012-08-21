@@ -23,8 +23,6 @@ TS10 = utc_mm_radio_set_frequency_func
 TS11 = utc_mm_radio_get_frequency_func
 TS12 = utc_mm_radio_scan_start_func
 TS13 = utc_mm_radio_scan_stop_func
-TS14 = utc_mm_radio_set_sound_path_func
-TS15 = utc_mm_radio_get_sound_path_func
 
 LIBS = `pkg-config --libs mm-radio`
 LIBS +=-L/usr/lib/:/usr/lib/pkgconfig
@@ -40,7 +38,7 @@ CFLAGS = $(INCS)
 CC += $(CFLAGS)
 LDFLAGS = $(LIBS)
 
-all : $(TS1) $(TS2) $(TS3) $(TS4) $(TS5) $(TS6) $(TS7) $(TS8) $(TS9) $(TS10) $(TS11) $(TS12) $(TS13) $(TS14) $(TS15)
+all : $(TS1) $(TS2) $(TS3) $(TS4) $(TS5) $(TS6) $(TS7) $(TS8) $(TS9) $(TS10) $(TS11) $(TS12) $(TS13)
 
 $(TS1): $(TS1).c
 	$(CC) -o $(TS1) $(TS1).c $(LDFLAGS)
@@ -81,14 +79,8 @@ $(TS12): $(TS12).c
 $(TS13): $(TS13).c
 	$(CC) -o $(TS13) $(TS13).c $(LDFLAGS)
 
-$(TS14): $(TS14).c
-	$(CC) -o $(TS14) $(TS14).c $(LDFLAGS)
-
-$(TS15): $(TS15).c
-	$(CC) -o $(TS15) $(TS15).c $(LDFLAGS)
-
 clean:
-	rm -rf *~ *.o $(TS1) $(TS2) $(TS3) $(TS4) $(TS5) $(TS6) $(TS7) $(TS8) $(TS9) $(TS10) $(TS11) $(TS12) $(TS13) $(TS14) $(TS15)
+	rm -rf *~ *.o $(TS1) $(TS2) $(TS3) $(TS4) $(TS5) $(TS6) $(TS7) $(TS8) $(TS9) $(TS10) $(TS11) $(TS12) $(TS13)
 	
 
 

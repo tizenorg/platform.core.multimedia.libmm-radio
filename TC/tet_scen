@@ -14,7 +14,5 @@ all
 	/utc/utc_mm_radio_get_frequency_func
 	/utc/utc_mm_radio_scan_start_func
 	/utc/utc_mm_radio_scan_stop_func
-	/utc/utc_mm_radio_set_sound_path_func
-	/utc/utc_mm_radio_get_sound_path_func
 	"Completed Full Test Suite"
 # EOF

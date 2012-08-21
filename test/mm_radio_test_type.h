@@ -43,7 +43,7 @@ typedef struct __test_item
 		}	\
 		else	\
 		{	\
-			printf("FAIL : %s ERR-CODE : %d -- %s:%d\n", #x_test, ret, __FILE__, __LINE__);	\
+			printf("FAIL : %s ERR-CODE : 0x%x -- %s:%d\n", #x_test, ret, __FILE__, __LINE__);	\
 		}
 
 #endif /* MM_RADIO_TEST_TYPE_H_ */
