@@ -1,6 +1,6 @@
 Name:       libmm-radio
 Summary:    Multimedia Framework Radio Library
-Version:    0.2.3
+Version:    0.2.0
 Release:    1
 Group:      TO_BE/FILLED_IN
 License:    TO BE FILLED IN

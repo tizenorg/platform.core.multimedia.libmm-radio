@@ -1,4 +1,0 @@
-@PREFIX@/include/mmf/mm_radio.h
-@PREFIX@/lib/*.la
-@PREFIX@/lib/*.a
-@PREFIX@/lib/pkgconfig/*
