@@ -8,8 +8,10 @@ AC_CONFIG_SRCDIR([src/mm_radio.c])
 AC_CONFIG_HEADER([config.h])
 
 # Checks for programs.
+m4_ifdef([AM_PROG_AR], [AM_PROG_AR])
 AC_PROG_LIBTOOL
 AC_PROG_CC
+AM_PROG_CC_C_O
 
 # Checks for libraries.
 

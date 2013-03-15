@@ -3,10 +3,8 @@ Summary:    Multimedia Framework Radio Library
 Version:    0.2.1
 Release:    0
 Group:      System/Libraries
-License:    Apache License, Version 2.0
+License:    Apache-2.0
 Source0:    %{name}-%{version}.tar.gz
-Requires(post): /sbin/ldconfig
-Requires(postun): /sbin/ldconfig
 BuildRequires:  audio-session-manager-devel
 BuildRequires:  pkgconfig(mm-common)
 BuildRequires:  pkgconfig(mm-log)
@@ -39,7 +37,6 @@ CFLAGS=" %{optflags}  -DGST_EXT_TIME_ANALYSIS -DEXPORT_API=\"__attribute__((visi
 make %{?jobs:-j%jobs}
 
 %install
-rm -rf %{buildroot}
 %make_install
 
 
