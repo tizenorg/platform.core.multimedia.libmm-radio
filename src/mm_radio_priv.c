@@ -618,7 +618,7 @@ _mmradio_set_message_callback(mm_radio_t* radio, MMMessageCallback callback, voi
 	radio->msg_cb = callback;
 	radio->msg_cb_param = user_param;
 
-	MMRADIO_LOG_DEBUG("msg_cb : 0x%x msg_cb_param : 0x%x\n", (unsigned int)callback, (unsigned int)user_param);
+	MMRADIO_LOG_DEBUG("msg_cb : 0x%p msg_cb_param : 0x%p\n", callback, user_param);
 
 	MMRADIO_LOG_FLEAVE();
 
