@@ -11,8 +11,13 @@ BuildRequires:  pkgconfig(mm-log)
 BuildRequires:  pkgconfig(mm-ta)
 BuildRequires:  pkgconfig(mm-session)
 BuildRequires:  pkgconfig(mm-sound)
+%if %{defined with_Gstreamer0.10}
 BuildRequires:  pkgconfig(gstreamer-0.10)
 BuildRequires:  pkgconfig(gstreamer-plugins-base-0.10)
+%else
+BuildRequires:  pkgconfig(gstreamer-1.0)
+BuildRequires:  pkgconfig(gstreamer-plugins-base-1.0)
+%endif
 
 %description
 Descirption: Multimedia Framework Radio Library
@@ -31,7 +36,15 @@ Description: Multimedia Framework Radio Library (DEV)
 
 %build
 ./autogen.sh
-CFLAGS=" %{optflags}  -DGST_EXT_TIME_ANALYSIS -DEXPORT_API=\"__attribute__((visibility(\\\"default\\\")))\" "; export CFLAGS;
+
+%if %{defined with_Gstreamer0.10}
+export GSTREAMER_API=""
+%else
+export GSTREAMER_API="-DGST_API_VERSION_1=1"
+export use_gstreamer_1=1
+%endif
+
+CFLAGS=" %{optflags}  -DGST_EXT_TIME_ANALYSIS -DEXPORT_API=\"__attribute__((visibility(\\\"default\\\")))\" $GSTREAMER_API"; export CFLAGS;
 %configure --disable-static --prefix=%{_prefix}
 
 make %{?jobs:-j%jobs}

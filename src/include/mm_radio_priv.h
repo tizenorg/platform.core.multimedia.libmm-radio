@@ -221,7 +221,7 @@ int _mmradio_destroy_pipeline(mm_radio_t* radio);
 #endif
 int _mmradio_apply_region(mm_radio_t*radio, MMRadioRegionType region, bool update);
 int _mmradio_get_region_type(mm_radio_t*radio, MMRadioRegionType *type);
-int _mmradio_get_region_frequency_range(mm_radio_t* radio, uint *min_freq, uint *max_freq);
+int _mmradio_get_region_frequency_range(mm_radio_t* radio, unsigned int *min_freq, unsigned int *max_freq);
 #if 0
 int mmradio_set_attrs(mm_radio_t*  radio, MMRadioAttrsType type, MMHandleType attrs);
 MMHandleType mmradio_get_attrs(mm_radio_t*  radio, MMRadioAttrsType type);
