@@ -5,6 +5,7 @@ Release:    0
 Group:      System/Libraries
 License:    Apache-2.0
 Source0:    %{name}-%{version}.tar.gz
+Source1001: 	libmm-radio.manifest
 BuildRequires:  audio-session-manager-devel
 BuildRequires:  pkgconfig(mm-common)
 BuildRequires:  pkgconfig(mm-log)
@@ -33,6 +34,7 @@ Description: Multimedia Framework Radio Library (DEV)
 
 %prep
 %setup -q
+cp %{SOURCE1001} .
 
 %build
 ./autogen.sh
@@ -59,7 +61,7 @@ make %{?jobs:-j%jobs}
 
 
 %files
-%manifest libmm-radio.manifest
+%manifest %{name}.manifest
 %defattr(-,root,root,-)
 %{_libdir}/libmmfradio.so.*
 %{_bindir}/mm_radio_testsuite
@@ -67,6 +69,7 @@ make %{?jobs:-j%jobs}
 
 
 %files devel
+%manifest %{name}.manifest
 %defattr(-,root,root,-)
 %{_libdir}/libmmfradio.so
 %{_libdir}/pkgconfig/mm-radio.pc
