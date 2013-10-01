@@ -21,7 +21,7 @@ BuildRequires:  pkgconfig(gstreamer-plugins-base-1.0)
 %endif
 
 %description
-Descirption: Multimedia Framework Radio Library
+Description: Multimedia Framework Radio Library
 
 
 %package devel
@@ -31,6 +31,14 @@ Requires:   %{name} = %{version}-%{release}
 
 %description devel
 Description: Multimedia Framework Radio Library (DEV)
+
+%package test
+Summary:    Multimedia Framework Radio Library (TEST)
+Group:      Development/Libraries
+Requires:   %{name} = %{version}-%{release}
+
+%description test
+Description: Multimedia Framework Radio Library (TEST)
 
 %prep
 %setup -q
@@ -64,7 +72,6 @@ make %{?jobs:-j%jobs}
 %manifest %{name}.manifest
 %defattr(-,root,root,-)
 %{_libdir}/libmmfradio.so.*
-%{_bindir}/mm_radio_testsuite
 
 
 
@@ -74,3 +81,8 @@ make %{?jobs:-j%jobs}
 %{_libdir}/libmmfradio.so
 %{_libdir}/pkgconfig/mm-radio.pc
 %{_includedir}/mmf/mm_radio.h
+
+%files test
+%manifest %{name}.manifest
+%defattr(-,root,root,-)
+%{_bindir}/mm_radio_testsuite
