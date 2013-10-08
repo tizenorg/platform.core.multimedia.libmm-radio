@@ -1,0 +1,9 @@
+Code-Review+1: Patrick McCarty <patrick.mccarty@linux.intel.com>
+Code-Review+1: Michael Demeter <michael.demeter@intel.com>
+Code-Review+2: vivian zhang <vivian.zhang@intel.com>
+Verified+1: vivian zhang <vivian.zhang@intel.com>
+Submitted-by: vivian zhang <vivian.zhang@intel.com>
+Submitted-at: Tue, 08 Oct 2013 00:57:50 -0700
+Reviewed-on: https://review.tizen.org/gerrit/10435
+Project: platform/core/multimedia/libmm-radio
+Branch: refs/heads/tizen
