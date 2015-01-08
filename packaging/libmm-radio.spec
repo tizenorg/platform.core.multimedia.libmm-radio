@@ -1,7 +1,7 @@
 Name:       libmm-radio
 Summary:    Multimedia Framework Radio Library
 Version:    0.2.1
-Release:    0
+Release:    1
 Group:      System/Libraries
 License:    Apache-2.0
 Source0:    %{name}-%{version}.tar.gz

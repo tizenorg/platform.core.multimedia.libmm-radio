@@ -737,7 +737,7 @@ _mmradio_realize_pipeline(mm_radio_t* radio)
 	g_object_set(radio->pGstreamer_s->avsysaudiosink, "sync", false, NULL);
 
 	if (!radio->pGstreamer_s->pipeline || !radio->pGstreamer_s->avsysaudiosrc || !radio->pGstreamer_s->queue2 || !radio->pGstreamer_s->avsysaudiosink) {
-		mmf_debug(MMF_DEBUG_ERROR,"[%s][%05d] One element could not be created. Exiting.\n", __func__, __LINE__);
+		debug_error("[%s][%05d] One element could not be created. Exiting.\n", __func__, __LINE__);
 		return MM_ERROR_RADIO_NOT_INITIALIZED;
 	}
 
@@ -751,7 +751,7 @@ _mmradio_realize_pipeline(mm_radio_t* radio)
 			radio->pGstreamer_s->queue2,
 			radio->pGstreamer_s->avsysaudiosink,
 			NULL)) {
-		mmf_debug(MMF_DEBUG_ERROR,"[%s][%05d] Fail to link b/w appsrc and ffmpeg in rotate\n", __func__, __LINE__);
+		debug_error("[%s][%05d] Fail to link b/w appsrc and ffmpeg in rotate\n", __func__, __LINE__);
 		return MM_ERROR_RADIO_NOT_INITIALIZED;
 	}
 	return ret;
@@ -765,7 +765,7 @@ _mmradio_start_pipeline(mm_radio_t* radio)
 	debug_log("\n");
 
 	if(gst_element_set_state (radio->pGstreamer_s->pipeline, GST_STATE_PLAYING) == GST_STATE_CHANGE_FAILURE) {
-		mmf_debug(MMF_DEBUG_ERROR, "Fail to change pipeline state");
+		debug_error("Fail to change pipeline state");
 		gst_object_unref (radio->pGstreamer_s->pipeline);
 		g_free (radio->pGstreamer_s);
 		return MM_ERROR_RADIO_INVALID_STATE;
@@ -773,12 +773,12 @@ _mmradio_start_pipeline(mm_radio_t* radio)
 
 	ret_state = gst_element_get_state (radio->pGstreamer_s->pipeline, NULL, NULL, GST_CLOCK_TIME_NONE);
 	if (ret_state == GST_STATE_CHANGE_FAILURE) {
-		mmf_debug(MMF_DEBUG_ERROR, "GST_STATE_CHANGE_FAILURE");
+		debug_error("GST_STATE_CHANGE_FAILURE");
 		gst_object_unref (radio->pGstreamer_s->pipeline);
 		g_free (radio->pGstreamer_s);
 		return MM_ERROR_RADIO_INVALID_STATE;
 	} else {
-		mmf_debug (MMF_DEBUG_LOG, "[%s][%05d] GST_STATE_NULL ret_state = %d (GST_STATE_CHANGE_SUCCESS)\n", __func__, __LINE__, ret_state);
+		debug_log("[%s][%05d] GST_STATE_NULL ret_state = %d (GST_STATE_CHANGE_SUCCESS)\n", __func__, __LINE__, ret_state);
 	}
 	return ret;
 }
@@ -791,7 +791,7 @@ _mmradio_stop_pipeline(mm_radio_t* radio)
 
 	debug_log("\n");
 	if(gst_element_set_state (radio->pGstreamer_s->pipeline, GST_STATE_READY) == GST_STATE_CHANGE_FAILURE) {
-		mmf_debug(MMF_DEBUG_ERROR, "Fail to change pipeline state");
+		debug_error("Fail to change pipeline state");
 		gst_object_unref (radio->pGstreamer_s->pipeline);
 		g_free (radio->pGstreamer_s);
 		return MM_ERROR_RADIO_INVALID_STATE;
@@ -799,12 +799,12 @@ _mmradio_stop_pipeline(mm_radio_t* radio)
 
 	ret_state = gst_element_get_state (radio->pGstreamer_s->pipeline, NULL, NULL, GST_CLOCK_TIME_NONE);
 	if (ret_state == GST_STATE_CHANGE_FAILURE) {
-		mmf_debug(MMF_DEBUG_ERROR, "GST_STATE_CHANGE_FAILURE");
+		debug_error("GST_STATE_CHANGE_FAILURE");
 		gst_object_unref (radio->pGstreamer_s->pipeline);
 		g_free (radio->pGstreamer_s);
 		return MM_ERROR_RADIO_INVALID_STATE;
 	} else {
-		mmf_debug (MMF_DEBUG_LOG, "[%s][%05d] GST_STATE_NULL ret_state = %d (GST_STATE_CHANGE_SUCCESS)\n", __func__, __LINE__, ret_state);
+		debug_log("[%s][%05d] GST_STATE_NULL ret_state = %d (GST_STATE_CHANGE_SUCCESS)\n", __func__, __LINE__, ret_state);
 	}
 	return ret;
 }
@@ -817,7 +817,7 @@ _mmradio_destroy_pipeline(mm_radio_t * radio)
 	debug_log("\n");
 
 	if(gst_element_set_state (radio->pGstreamer_s->pipeline, GST_STATE_NULL) == GST_STATE_CHANGE_FAILURE) {
-		mmf_debug(MMF_DEBUG_ERROR, "Fail to change pipeline state");
+		debug_error("Fail to change pipeline state");
 		gst_object_unref (radio->pGstreamer_s->pipeline);
 		g_free (radio->pGstreamer_s);
 		return MM_ERROR_RADIO_INVALID_STATE;
@@ -825,12 +825,12 @@ _mmradio_destroy_pipeline(mm_radio_t * radio)
 
 	ret_state = gst_element_get_state (radio->pGstreamer_s->pipeline, NULL, NULL, GST_CLOCK_TIME_NONE);
 	if (ret_state == GST_STATE_CHANGE_FAILURE) {
-		mmf_debug(MMF_DEBUG_ERROR, "GST_STATE_CHANGE_FAILURE");
+		debug_error("GST_STATE_CHANGE_FAILURE");
 		gst_object_unref (radio->pGstreamer_s->pipeline);
 		g_free (radio->pGstreamer_s);
 		return MM_ERROR_RADIO_INVALID_STATE;
 	} else {
-		mmf_debug (MMF_DEBUG_LOG, "[%s][%05d] GST_STATE_NULL ret_state = %d (GST_STATE_CHANGE_SUCCESS)\n", __func__, __LINE__, ret_state);
+		debug_log ("[%s][%05d] GST_STATE_NULL ret_state = %d (GST_STATE_CHANGE_SUCCESS)\n", __func__, __LINE__, ret_state);
 	}
 	gst_object_unref (radio->pGstreamer_s->pipeline);
 	g_free (radio->pGstreamer_s);
@@ -1410,7 +1410,7 @@ __mmradio_asm_callback(int handle, ASM_event_sources_t event_source, ASM_sound_c
 						MMRADIO_LOG_ERROR("failed to stop radio\n");
 					}
 
-					MMRADIO_LOG_DEBUG("skip unrealize in asm callback")
+					MMRADIO_LOG_DEBUG("skip unrealize in asm callback");
 				}
 				break;
 
