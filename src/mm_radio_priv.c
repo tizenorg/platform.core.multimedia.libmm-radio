@@ -34,7 +34,6 @@
 #include <unistd.h>
 #include <errno.h>
 #include <mm_sound.h>
-#include <mm_ta.h>
 
 #include <mm_error.h>
 #include <mm_debug.h>
@@ -731,7 +730,7 @@ _mmradio_realize_pipeline(mm_radio_t* radio)
 
 	radio->pGstreamer_s->avsysaudiosrc= gst_element_factory_make("avsysaudiosrc","fm audio src");
 	radio->pGstreamer_s->queue2= gst_element_factory_make("queue2","queue2");
-	radio->pGstreamer_s->avsysaudiosink= gst_element_factory_make("avsysaudiosink","audio sink");
+	radio->pGstreamer_s->avsysaudiosink= gst_element_factory_make("pulsesink","audio sink");
 
 	g_object_set(radio->pGstreamer_s->avsysaudiosrc, "latency", 2, NULL);
 	g_object_set(radio->pGstreamer_s->avsysaudiosink, "sync", false, NULL);
@@ -830,7 +829,7 @@ _mmradio_destroy_pipeline(mm_radio_t * radio)
 		g_free (radio->pGstreamer_s);
 		return MM_ERROR_RADIO_INVALID_STATE;
 	} else {
-		debug_log ("[%s][%05d] GST_STATE_NULL ret_state = %d (GST_STATE_CHANGE_SUCCESS)\n", __func__, __LINE__, ret_state);
+		debug_log("[%s][%05d] GST_STATE_NULL ret_state = %d (GST_STATE_CHANGE_SUCCESS)\n", __func__, __LINE__, ret_state);
 	}
 	gst_object_unref (radio->pGstreamer_s->pipeline);
 	g_free (radio->pGstreamer_s);
@@ -921,6 +920,31 @@ _mmradio_stop_scan(mm_radio_t* radio)
 	return MM_ERROR_NONE;
 }
 
+int
+_mm_radio_get_signal_strength(mm_radio_t* radio, int *value)
+{
+	MMRADIO_LOG_FENTER();
+	MMRADIO_CHECK_INSTANCE( radio );
+
+	return_val_if_fail( value, MM_ERROR_INVALID_ARGUMENT );
+
+	/* just return stored frequency if radio device is not ready */
+	if ( radio->radio_fd < 0 )
+	{
+		MMRADIO_SLOG_DEBUG("Device not ready so sending 0\n");
+		*value = 0;
+		return MM_ERROR_NONE;
+	}
+	if (ioctl(radio->radio_fd, VIDIOC_G_TUNER, &(radio->vt)) < 0)
+	{
+		debug_error("ioctl VIDIOC_G_TUNER error\n");
+		return MM_ERROR_RADIO_INTERNAL;
+	}
+        *value = radio->vt.signal;
+	MMRADIO_LOG_FLEAVE();
+	return MM_ERROR_NONE;
+}
+
 void
 __mmradio_scan_thread(mm_radio_t* radio)
 {
@@ -933,9 +957,7 @@ __mmradio_scan_thread(mm_radio_t* radio)
 	vs.seek_upward = 1; /* up : 1	------- down : 0 */
 
 	MMRADIO_LOG_FENTER();
-
 	MMRADIO_CHECK_INSTANCE( radio );
-
 	if( _mmradio_mute(radio) != MM_ERROR_NONE)
 		goto FINISHED;
 
@@ -1020,6 +1042,8 @@ FINISHED:
 	MMRADIO_LOG_FLEAVE();
 
 	pthread_exit(NULL);
+
+	return;
 }
 
 bool 
@@ -1051,7 +1075,6 @@ __mmradio_seek_thread(mm_radio_t* radio)
 	vs.wrap_around = DEFAULT_WRAP_AROUND;
 
 	MMRADIO_LOG_FENTER();
-
 	MMRADIO_CHECK_INSTANCE( radio );
 
 	/* check direction */
@@ -1150,6 +1173,7 @@ SEEK_FAILED:
 	param.radio_scan.frequency = -1;
 	MMRADIO_POST_MSG(radio, MM_MESSAGE_RADIO_SEEK_FINISH, &param);
 	pthread_exit(NULL);
+	return;
 }
 
 static bool

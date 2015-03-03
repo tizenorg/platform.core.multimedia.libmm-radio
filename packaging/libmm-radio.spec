@@ -9,7 +9,6 @@ Source1001: 	libmm-radio.manifest
 BuildRequires:  audio-session-manager-devel
 BuildRequires:  pkgconfig(mm-common)
 BuildRequires:  pkgconfig(mm-log)
-BuildRequires:  pkgconfig(mm-ta)
 BuildRequires:  pkgconfig(mm-session)
 BuildRequires:  pkgconfig(mm-sound)
 %if %{defined with_Gstreamer0.10}
