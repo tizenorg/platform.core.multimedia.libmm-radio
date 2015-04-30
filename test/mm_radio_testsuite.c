@@ -259,7 +259,6 @@ int __test_radio_listen_gorealra(void)
 	RADIO_TEST__( mm_radio_realize(radio); )
 	RADIO_TEST__( mm_radio_set_frequency( radio, DEFAULT_TEST_FREQ ); )
 	RADIO_TEST__( mm_radio_start(radio); )
-
 	return ret;
 }
 

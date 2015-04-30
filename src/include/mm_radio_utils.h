@@ -18,7 +18,7 @@
  * limitations under the License.
  *
  */
- 
+
 #ifndef __MM_RADIO_UTILS_H__
 #define __MM_RADIO_UTILS_H__
 
@@ -34,7 +34,6 @@
 #define MMRADIO_LOG_ERROR		debug_error
 #define MMRADIO_LOG_WARNING	debug_warning
 #define MMRADIO_LOG_CRITICAL	debug_critical
-#define MMRADIO_SLOG_DEBUG		secure_debug_log
 
 /* general */
 #ifndef ARRAY_SIZE
