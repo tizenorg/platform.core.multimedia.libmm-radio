@@ -3443,6 +3443,20 @@ int mm_radio_get_region_type(MMHandleType hradio, MMRadioRegionType *type);
 int mm_radio_get_region_frequency_range(MMHandleType hradio, unsigned int *min, unsigned int *max);
 
 /**
+ * This function is to get channel spacing.
+ *
+ * @param	hradio		[in]		Handle of radio.
+ * @param	channel_spacing	[out]		channel spacing value
+ *
+ * @return	This function returns zero on success, or negative value with errors
+ * @pre		None
+ * @post 	None
+ * @see mm_radio_get_region_type()
+ */
+int mm_radio_get_channel_spacing(MMHandleType hradio, int *channel_spacing);
+
+
+/**
 	@}
  */
 

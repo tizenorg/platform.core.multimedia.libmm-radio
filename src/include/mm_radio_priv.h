@@ -124,7 +124,7 @@ typedef struct
 	MMRadioDeemphasis deemphasis;	// unit :  us
 	MMRadioFreqTypes band_min;		// <- freq. range, unit : KHz
 	MMRadioFreqTypes band_max;		// ->
-	//int channel_spacing;				// TBD
+	int channel_spacing;				// TBD
 }MMRadioRegion_t;
 
 /*---------------------------------------------------------------------------
@@ -137,10 +137,10 @@ typedef struct _mm_radio_gstreamer_s
 {
 	GMainLoop *loop;
 	GstElement *pipeline;
-	GstElement *avsysaudiosrc;
+	GstElement *audiosrc;
 	GstElement *queue2;
 	GstElement *volume;
-	GstElement *avsysaudiosink;
+	GstElement *audiosink;
 	GstBuffer *output_buffer;
 } mm_radio_gstreamer_s;
 #endif

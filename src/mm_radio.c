@@ -177,10 +177,19 @@ int mm_radio_unrealize(MMHandleType hradio)
 {
 	int result = MM_ERROR_NONE;
 	mm_radio_t* radio = (mm_radio_t*)hradio;
+	MMRadioStateType state = 0;
 
 	MMRADIO_LOG_FENTER();
 
 	return_val_if_fail(radio, MM_ERROR_RADIO_NOT_INITIALIZED);
+
+	mm_radio_get_state((hradio), &state);
+	MMRADIO_LOG_DEBUG("mm_radio_unrealize state: %d\n", state);
+
+	if(state == MM_RADIO_STATE_SCANNING)
+	{
+		mm_radio_scan_stop(hradio);
+	}
 
 	MMRADIO_CMD_LOCK( radio );
 
@@ -476,4 +485,27 @@ int mm_radio_get_region_frequency_range(MMHandleType hradio, unsigned int *min, 
 	MMRADIO_LOG_FLEAVE();
 	return result;
 }
+
+int mm_radio_get_channel_spacing(MMHandleType hradio, int *channel_spacing)
+{
+	MMRADIO_LOG_FENTER();
+
+	return_val_if_fail(hradio, MM_ERROR_RADIO_NOT_INITIALIZED);
+	return_val_if_fail(channel_spacing, MM_ERROR_INVALID_ARGUMENT);
+
+	int result = MM_ERROR_NONE;
+	mm_radio_t* radio = (mm_radio_t*)hradio;
+	unsigned int ch_spacing = 0;
+
+	result = _mmradio_get_channel_spacing(radio, &ch_spacing);
+
+	if (result == MM_ERROR_NONE)
+	{
+		*channel_spacing = ch_spacing;
+	}
+
+	MMRADIO_LOG_FLEAVE();
+	return result;
+}
+
 

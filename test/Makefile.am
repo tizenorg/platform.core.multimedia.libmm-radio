@@ -4,7 +4,8 @@ mm_radio_testsuite_SOURCES = mm_radio_testsuite.c \
 												mm_radio_rt_api_test.c
 
 mm_radio_testsuite_CFLAGS = -I$(srcdir)/../src/include \
-							     $(MMCOMMON_CFLAGS)
+							     $(MMCOMMON_CFLAGS) \
+							     -fPIC -pie
 
 mm_radio_testsuite_DEPENDENCIES = $(top_builddir)/src/libmmfradio.la 
 						
