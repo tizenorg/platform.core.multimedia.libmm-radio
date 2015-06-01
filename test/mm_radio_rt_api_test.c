@@ -23,7 +23,7 @@
 #include "mm_radio.h"
 #include "mm_radio_rt_api_test.h"
 
-#define MENU_ITEM_MAX	19
+#define MENU_ITEM_MAX	20
 #define _MAX_INPUT_STRING_ 100
 
 static int __menu(void);
@@ -160,6 +160,15 @@ void __call_api( int choosen )
 			RADIO_TEST__( mm_radio_get_signal_strength(g_my_radio, &signal_strength); )
 			printf("signal strength is : %d \n", signal_strength);
 		}
+		break;
+		case 20:
+		{
+			int channel_spacing = 0;
+			RADIO_TEST__( mm_radio_get_channel_spacing(g_my_radio, &channel_spacing); )
+			printf("channel_spacing is : %d \n", channel_spacing);
+		}
+		break;
+
 		default:
 			break;
 	}
@@ -210,10 +219,11 @@ int __menu(void)
 	printf("[17] mm_radio_get_region_type\n");
 	printf("[18] mm_radio_get_region_frequency_range\n");
 	printf("[19] mm_radio_signal_strength\n");
+	printf("[20] mm_radio_get_channel_spacing\n");
 	printf("[0] quit\n");
 	printf("---------------------------------------------------------\n");
 	printf("choose one : ");
-	
+
 	if ( scanf("%d", &menu_item) == 0)
 	{
 		char temp[_MAX_INPUT_STRING_];

@@ -95,18 +95,21 @@ static const MMRadioRegion_t region_table[] =
 			MM_RADIO_DEEMPHASIS_75_US,	// de-emphasis
 			MM_RADIO_FREQ_MIN_87500_KHZ, 	// min freq.
 			MM_RADIO_FREQ_MAX_108000_KHZ,	// max freq.
+			50,
 		},
 		{	/* China, Europe, Africa, Middle East, Hong Kong, India, Indonesia, Russia, Singapore */
 			MM_RADIO_REGION_GROUP_EUROPE,
 			MM_RADIO_DEEMPHASIS_50_US,
 			MM_RADIO_FREQ_MIN_87500_KHZ,
 			MM_RADIO_FREQ_MAX_108000_KHZ,
+			50,
 		},
 		{
 			MM_RADIO_REGION_GROUP_JAPAN,
 			MM_RADIO_DEEMPHASIS_50_US,
 			MM_RADIO_FREQ_MIN_76100_KHZ,
 			MM_RADIO_FREQ_MAX_89900_KHZ,
+			50,
 		},
 };
 /*---------------------------------------------------------------------------
@@ -166,6 +169,7 @@ _mmradio_apply_region(mm_radio_t* radio, MMRadioRegionType region, bool update)
 				radio->region_setting.deemphasis = region_table[index].deemphasis;
 				radio->region_setting.band_min = region_table[index].band_min;
 				radio->region_setting.band_max = region_table[index].band_max;
+				radio->region_setting.channel_spacing = region_table[index].channel_spacing;
 			}
 		}
 	}
@@ -727,29 +731,29 @@ _mmradio_realize_pipeline(mm_radio_t* radio)
 	gst_init (NULL, NULL);
 	radio->pGstreamer_s = g_new0 (mm_radio_gstreamer_s, 1);
 
-	radio->pGstreamer_s->pipeline= gst_pipeline_new ("avsysaudio");
+	radio->pGstreamer_s->pipeline= gst_pipeline_new ("fmradio");
 
-	radio->pGstreamer_s->avsysaudiosrc= gst_element_factory_make("avsysaudiosrc","fm audio src");
+	radio->pGstreamer_s->audiosrc= gst_element_factory_make("pulsesrc","fm audio src");
 	radio->pGstreamer_s->queue2= gst_element_factory_make("queue2","queue2");
-	radio->pGstreamer_s->avsysaudiosink= gst_element_factory_make("pulsesink","audio sink");
+	radio->pGstreamer_s->audiosink= gst_element_factory_make("pulsesink","audio sink");
 
-	g_object_set(radio->pGstreamer_s->avsysaudiosrc, "latency", 2, NULL);
-	g_object_set(radio->pGstreamer_s->avsysaudiosink, "sync", false, NULL);
+//	g_object_set(radio->pGstreamer_s->audiosrc, "latency", 2, NULL);
+	g_object_set(radio->pGstreamer_s->audiosink, "sync", false, NULL);
 
-	if (!radio->pGstreamer_s->pipeline || !radio->pGstreamer_s->avsysaudiosrc || !radio->pGstreamer_s->queue2 || !radio->pGstreamer_s->avsysaudiosink) {
+	if (!radio->pGstreamer_s->pipeline || !radio->pGstreamer_s->audiosrc || !radio->pGstreamer_s->queue2 || !radio->pGstreamer_s->audiosink) {
 		debug_error("[%s][%05d] One element could not be created. Exiting.\n", __func__, __LINE__);
 		return MM_ERROR_RADIO_NOT_INITIALIZED;
 	}
 
 	gst_bin_add_many(GST_BIN(radio->pGstreamer_s->pipeline),
-			radio->pGstreamer_s->avsysaudiosrc,
+			radio->pGstreamer_s->audiosrc,
 			radio->pGstreamer_s->queue2,
-			radio->pGstreamer_s->avsysaudiosink,
+			radio->pGstreamer_s->audiosink,
 			NULL);
 	if(!gst_element_link_many(
-			radio->pGstreamer_s->avsysaudiosrc,
+			radio->pGstreamer_s->audiosrc,
 			radio->pGstreamer_s->queue2,
-			radio->pGstreamer_s->avsysaudiosink,
+			radio->pGstreamer_s->audiosink,
 			NULL)) {
 		debug_error("[%s][%05d] Fail to link b/w appsrc and ffmpeg in rotate\n", __func__, __LINE__);
 		return MM_ERROR_RADIO_NOT_INITIALIZED;
@@ -1510,3 +1514,19 @@ int _mmradio_get_region_frequency_range(mm_radio_t* radio, unsigned int *min_fre
 	MMRADIO_LOG_FLEAVE();
 	return MM_ERROR_NONE;
 }
+
+int _mmradio_get_channel_spacing(mm_radio_t* radio, unsigned int *ch_spacing)
+{
+	MMRADIO_LOG_FENTER();
+	MMRADIO_CHECK_INSTANCE( radio );
+	MMRADIO_CHECK_STATE_RETURN_IF_FAIL( radio, MMRADIO_COMMAND_GET_REGION );
+
+	return_val_if_fail( ch_spacing, MM_ERROR_INVALID_ARGUMENT );
+
+	*ch_spacing = radio->region_setting.channel_spacing;
+
+	MMRADIO_LOG_FLEAVE();
+	return MM_ERROR_NONE;
+}
+
+

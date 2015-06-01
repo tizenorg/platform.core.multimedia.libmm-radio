@@ -38,7 +38,7 @@
 	This part describes the APIs with respect to play radio
 
  */
- 
+
 
 /**
  * Enumerations of radio state.
@@ -81,8 +81,8 @@ typedef enum {
 
 /**
  * This function creates a radio handle. \n
- * So, application can make radio instance and initializes it. 
- * 
+ * So, application can make radio instance and initializes it.
+ *
  *
  * @param	hradio		[out]	Handle of radio.
  *
@@ -302,7 +302,7 @@ int mm_radio_create(MMHandleType *hradio);
 
 /**
  * This function deletes radio handle. \n
- * It closes radio device and releases all resources allocated. 
+ * It closes radio device and releases all resources allocated.
  *
  * @param	hradio		[in]	Handle of radio.
  *
@@ -310,7 +310,7 @@ int mm_radio_create(MMHandleType *hradio);
  * @pre		Application can use this API at any state.
  * @post 	None
  * @remark	None
- * @see		mm_radio_create mm_radio_realize mm_radio_unrealize mm_radio_start mm_radio_stop 
+ * @see		mm_radio_create mm_radio_realize mm_radio_unrealize mm_radio_start mm_radio_stop
  * @par		Example
  * @code
 #include <stdlib.h>
@@ -741,7 +741,7 @@ int mm_radio_realize(MMHandleType hradio);
 
 /**
  * This function mutes tuner and closes the radio device.
- * And, application can destroy radio directly without this API. 
+ * And, application can destroy radio directly without this API.
  *
  * @param	hradio		[in]	Handle of radio.
  *
@@ -1396,7 +1396,7 @@ int main(int argc, char **argv)
 		__call_api( choosen );
 	}
 }
- * @endcode 
+ * @endcode
  */
 int mm_radio_get_state(MMHandleType hradio, MMRadioStateType *state);
 
@@ -1616,7 +1616,7 @@ int main(int argc, char **argv)
 	}
 }
 
- * @endcode 
+ * @endcode
  */
 int mm_radio_start(MMHandleType hradio);
 
@@ -1836,7 +1836,7 @@ int main(int argc, char **argv)
 	}
 }
 
- * @endcode 
+ * @endcode
  */
 int mm_radio_stop(MMHandleType hradio);
 
@@ -1846,8 +1846,8 @@ int mm_radio_stop(MMHandleType hradio);
  * MM_MESSAGE_RADIO_SEEK_START will be sent when this function is called. \n
  * And if one valid frequency is found, MM_MESSAGE_RADIO_SEEK_FINISH will be sent. \n
  * It doesn't support wrap_around to prevent looping when there is no any valid frequency. \n
- * So, we will notice the limit of band as 87.5Mhz or 108Mhz. 
- * In this case, applicaion can take two scenario. 
+ * So, we will notice the limit of band as 87.5Mhz or 108Mhz.
+ * In this case, applicaion can take two scenario.
  * One is to seek continually in the same direction. The other is to set previous frequency.
  *
  * @param	hradio		[in]	Handle of radio.
@@ -2064,7 +2064,7 @@ int main(int argc, char **argv)
 	}
 }
 
- * @endcode 
+ * @endcode
  */
 int mm_radio_seek(MMHandleType hradio, MMRadioSeekDirectionType direction);
 
@@ -2285,7 +2285,7 @@ int main(int argc, char **argv)
 	}
 }
 
- * @endcode 
+ * @endcode
  */
 int mm_radio_set_frequency(MMHandleType hradio, int freq);
 
@@ -2506,21 +2506,21 @@ int main(int argc, char **argv)
 	}
 }
 
- * @endcode 
+ * @endcode
  */
 int mm_radio_get_frequency(MMHandleType hradio, int* pFreq);
 
 /**
  * This function is to start for getting all effective frequencies. \n
- * So, if a frequency is found, MM_MESSAGE_RADIO_SCAN_INFO will be posted with frequency information. 
- * If there is no frequency, we will post MM_MESSAGE_RADIO_SCAN_FINISH. 
- * And then, the radio state will be changed as MM_RADIO_STATE_READY. 
+ * So, if a frequency is found, MM_MESSAGE_RADIO_SCAN_INFO will be posted with frequency information.
+ * If there is no frequency, we will post MM_MESSAGE_RADIO_SCAN_FINISH.
+ * And then, the radio state will be changed as MM_RADIO_STATE_READY.
  *
  * @param	hradio		[in]	Handle of radio.
  *
  * @return	This function returns zero on success, or negative value with errors
  * @pre		MM_RADIO_STATE_READY
- * @post		MM_RADIO_STATE_SCANNING 
+ * @post		MM_RADIO_STATE_SCANNING
  * @remark	None
  * @see		mm_radio_scan_stop
  * @par		Example
@@ -2729,13 +2729,13 @@ int main(int argc, char **argv)
 	}
 }
 
- * @endcode 
+ * @endcode
  */
 int mm_radio_scan_start(MMHandleType hradio);
 
 /**
  * This function is to stop for getting all the effective frequencies. \n
- * So, application can use this API to stop in the middle of scanning. 
+ * So, application can use this API to stop in the middle of scanning.
  *
  * @param	hradio		[in]	Handle of radio.
  *
@@ -2950,7 +2950,7 @@ int main(int argc, char **argv)
 	}
 }
 
- * @endcode 
+ * @endcode
  */
 int mm_radio_scan_stop(MMHandleType hradio);
 
@@ -2964,7 +2964,7 @@ int mm_radio_scan_stop(MMHandleType hradio);
  * @pre		None
  * @post 	None
  * @remark	None
- * @see		
+ * @see
  * @par		Example
  * @code
 #include <stdlib.h>
@@ -3003,7 +3003,7 @@ int __menu(void)
 	printf("[12] mm_radio_get_frequency\n");
 	printf("[13] mm_radio_scan_start\n");
 	printf("[14] mm_radio_scan_stop\n");
-	printf("[16] mm_radio_set_mute\n");	
+	printf("[16] mm_radio_set_mute\n");
 	printf("[0] quit\n");
 	printf("---------------------------------------------------------\n");
 	printf("choose one : ");
@@ -3180,7 +3180,7 @@ int main(int argc, char **argv)
 	}
 }
 
- * @endcode 
+ * @endcode
  */
 int mm_radio_set_mute(MMHandleType hradio, bool muted);
 /**
@@ -3443,10 +3443,24 @@ int mm_radio_get_region_type(MMHandleType hradio, MMRadioRegionType *type);
 int mm_radio_get_region_frequency_range(MMHandleType hradio, unsigned int *min, unsigned int *max);
 
 /**
+ * This function is to get channel spacing.
+ *
+ * @param	hradio		[in]		Handle of radio.
+ * @param	channel_spacing	[out]		channel spacing value
+ *
+ * @return	This function returns zero on success, or negative value with errors
+ * @pre		None
+ * @post 	None
+ * @see mm_radio_get_region_type()
+ */
+int mm_radio_get_channel_spacing(MMHandleType hradio, int *channel_spacing);
+
+
+/**
 	@}
  */
 
-	
+
 #ifdef __cplusplus
 	}
 #endif
