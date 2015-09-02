@@ -6,7 +6,7 @@ Group:      System/Libraries
 License:    Apache-2.0
 Source0:    %{name}-%{version}.tar.gz
 Source1001: 	libmm-radio.manifest
-BuildRequires:  audio-session-manager-devel
+BuildRequires:  pkgconfig(audio-session-mgr)
 BuildRequires:  pkgconfig(mm-common)
 BuildRequires:  pkgconfig(mm-log)
 BuildRequires:  pkgconfig(mm-session)
