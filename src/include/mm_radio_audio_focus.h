@@ -19,8 +19,8 @@
  *
  */
  
-#ifndef MM_RADIO_ASM_H_
-#define MM_RADIO_ASM_H_
+#ifndef MM_RADIO_AUDIO_FOCUS_H_
+#define MM_RADIO_AUDIO_FOCUS_H_
 
 #include <mm_types.h>
 #include <mm_error.h>
@@ -28,6 +28,7 @@
 #include <mm_session.h>
 #include <mm_session_private.h>
 #include <audio-session-manager.h>
+#include <mm_sound_focus.h>
 
 enum {
 	MMRADIO_ASM_CB_NONE,
@@ -39,12 +40,13 @@ typedef struct {
 	int pid;
 	int by_asm_cb;
 	int event_src;
-	ASM_sound_states_t state;
-} MMRadioASM;
+	int sound_focus_register;
+	int asm_session_flags;
+} MMRadioAudioFocus;
 
-/* returns allocated handle */
-int mmradio_asm_register(MMRadioASM* sm, ASM_sound_cb_t callback, void* param);
-int mmradio_asm_deregister(MMRadioASM* sm);
-int mmradio_asm_set_state(MMRadioASM* sm, ASM_sound_states_t state, ASM_resource_t resource);
+int mmradio_audio_focus_register(MMRadioAudioFocus* sm, mm_sound_focus_changed_cb callback, void* param);
+int mmradio_audio_focus_deregister(MMRadioAudioFocus* sm);
+int mmradio_set_audio_focus(MMRadioAudioFocus* sm, mm_sound_focus_changed_watch_cb callback, int bSet, void* param);
+void mmradio_get_audio_focus_reason(mm_sound_focus_state_e focus_state, const char *reason_for_change, ASM_event_sources_t *event_source, int *postMsg);
 
-#endif /* MM_RADIO_ASM_H_ */
+#endif /* MM_RADIO_AUDIO_FOCUS_H_ */

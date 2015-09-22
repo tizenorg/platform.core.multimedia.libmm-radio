@@ -35,14 +35,17 @@
 #include <mm_types.h>
 #include <mm_message.h>
 
-#include "mm_radio_asm.h"
+#include "mm_radio_audio_focus.h"
 #include "mm_radio.h"
 #include "mm_radio_utils.h"
 #include <linux/videodev2.h>
 
 #include <gst/gst.h>
 #include <gst/gstbuffer.h>
- 
+
+#include <mm_sound.h>
+#include <mm_sound_focus.h>
+
 #ifdef __cplusplus
 	extern "C" {
 #endif
@@ -184,8 +187,7 @@ typedef struct {
 	int prev_seek_freq;
 	MMRadioSeekDirectionType seek_direction;
 
-	/* ASM */
-	MMRadioASM sm;
+	MMRadioAudioFocus sm;
 
 	int freq;
 #ifdef USE_GST_PIPELINE
@@ -224,6 +226,16 @@ int _mmradio_destroy_pipeline(mm_radio_t* radio);
 int _mmradio_apply_region(mm_radio_t*radio, MMRadioRegionType region, bool update);
 int _mmradio_get_region_type(mm_radio_t*radio, MMRadioRegionType *type);
 int _mmradio_get_region_frequency_range(mm_radio_t* radio, unsigned int *min_freq, unsigned int *max_freq);
+int _mmradio_get_channel_spacing(mm_radio_t* radio, unsigned int *ch_spacing);
+void _mmradio_sound_focus_cb(int id, mm_sound_focus_type_e focus_type,
+                             mm_sound_focus_state_e focus_state, const char *reason_for_change,
+                             const char *additional_info, void *user_data);
+
+void _mmradio_sound_focus_watch_cb(int id, mm_sound_focus_type_e focus_type,
+    						mm_sound_focus_state_e focus_state, const char *reason_for_change,
+    						const char *additional_info, void *user_data);
+int _mm_radio_audio_focus_register_with_pid(mm_radio_t* radio, int pid) ;
+
 #if 0
 int mmradio_set_attrs(mm_radio_t*  radio, MMRadioAttrsType type, MMHandleType attrs);
 MMHandleType mmradio_get_attrs(mm_radio_t*  radio, MMRadioAttrsType type);
