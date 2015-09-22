@@ -19,8 +19,8 @@
  *
  */
  
-#ifndef MM_RADIO_ASM_H_
-#define MM_RADIO_ASM_H_
+#ifndef MM_RADIO_AUDIO_FOCUS_H_
+#define MM_RADIO_AUDIO_FOCUS_H_
 
 #include <mm_types.h>
 #include <mm_error.h>
@@ -39,12 +39,8 @@ typedef struct {
 	int pid;
 	int by_asm_cb;
 	int event_src;
-	ASM_sound_states_t state;
-} MMRadioASM;
+	int sound_focus_register;
+	int asm_session_flags;
+} MMRadioAudioFocus;
 
-/* returns allocated handle */
-int mmradio_asm_register(MMRadioASM* sm, ASM_sound_cb_t callback, void* param);
-int mmradio_asm_deregister(MMRadioASM* sm);
-int mmradio_asm_set_state(MMRadioASM* sm, ASM_sound_states_t state, ASM_resource_t resource);
-
-#endif /* MM_RADIO_ASM_H_ */
+#endif /* MM_RADIO_AUDIO_FOCUS_H_ */
