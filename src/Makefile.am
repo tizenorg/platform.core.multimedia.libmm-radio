@@ -5,7 +5,7 @@ includelibmmfradio_HEADERS = include/mm_radio.h
 
 libmmfradio_la_SOURCES = mm_radio.c \
 			 mm_radio_priv.c \
-			 mm_radio_asm.c
+			 mm_radio_audio_focus.c
 
 libmmfradio_la_CFLAGS = -I. -I./include \
 			$(GTHREAD_CFLAGS) \
