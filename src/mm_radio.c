@@ -508,4 +508,24 @@ int mm_radio_get_channel_spacing(MMHandleType hradio, int *channel_spacing)
 	return result;
 }
 
+int mm_radio_audio_focus_register(MMHandleType hradio, int pid)
+{
+	int result = MM_ERROR_NONE;
+	mm_radio_t* radio = (mm_radio_t*)hradio;
 
+	MMRADIO_LOG_FENTER();
+
+	return_val_if_fail(radio, MM_ERROR_RADIO_NOT_INITIALIZED);
+	return_val_if_fail(pid > 0, MM_ERROR_INVALID_ARGUMENT);
+
+	MMRADIO_CMD_LOCK( radio );
+
+	result = _mm_radio_audio_focus_register_with_pid(radio, pid);
+
+	MMRADIO_CMD_UNLOCK( radio );
+
+	MMRADIO_LOG_FLEAVE();
+
+	return result;
+
+}

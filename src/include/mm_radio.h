@@ -3460,6 +3460,20 @@ int mm_radio_get_channel_spacing(MMHandleType hradio, int *channel_spacing);
 	@}
  */
 
+int mm_radio_audio_focus_register(MMHandleType hradio, int pid);
+
+/**
+ * This function is to register sound focus for session.
+ *
+ * @param	hradio		[in]		Handle of radio.
+ * @param	pid			[in]		process id
+ *
+ * @return	This function returns zero on success, or negative value with errors
+ * @pre		MM_RADIO_STATE_NULL
+ * @post 	None
+ * @see 	mm_radio_audio_focus_register()
+ */
+
 
 #ifdef __cplusplus
 	}
