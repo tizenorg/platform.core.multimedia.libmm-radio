@@ -193,6 +193,7 @@ typedef struct {
 #ifdef USE_GST_PIPELINE
 	mm_radio_gstreamer_s* pGstreamer_s;
 #endif
+	unsigned int subs_id;
 
 	/* region settings */
 	MMRadioRegion_t	region_setting;

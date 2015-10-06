@@ -38,6 +38,7 @@
 #include <mm_debug.h>
 #include <mm_message.h>
 
+#include <mm_sound_device.h>
 
 #include "mm_radio_priv.h"
 
@@ -124,6 +125,7 @@ static void	__mmradio_scan_thread(mm_radio_t* radio);
 static bool 	__is_tunable_frequency(mm_radio_t* radio, int freq);
 static int 		__mmradio_set_deemphasis(mm_radio_t* radio);
 static int 		__mmradio_set_band_range(mm_radio_t* radio);
+static void __mmradio_device_connected_cb(MMSoundDevice_t device, bool is_connected, void *user_data);
 
 /*===========================================================================
   FUNCTION DEFINITIONS
@@ -212,6 +214,7 @@ _mmradio_create_radio(mm_radio_t* radio)
 	radio->radio_fd = -1;
 	radio->freq = DEFAULT_FREQ;
 	memset(&radio->region_setting, 0, sizeof(MMRadioRegion_t));
+	radio->subs_id = 0;
 
 	/* create command lock */
 	ret = pthread_mutex_init( &radio->cmd_lock, NULL );
@@ -222,6 +225,16 @@ _mmradio_create_radio(mm_radio_t* radio)
 	}
 
 	MMRADIO_SET_STATE( radio, MM_RADIO_STATE_NULL );
+
+	/* add device conneted callback */
+	ret = mm_sound_add_device_connected_callback(MM_SOUND_DEVICE_STATE_ACTIVATED_FLAG,
+                                                (mm_sound_device_connected_cb)__mmradio_device_connected_cb,
+                                                (void *)radio, &radio->subs_id);
+	if ( ret )
+	{
+		MMRADIO_LOG_ERROR("mm_sound_add_device_connected_callback is failed\n");
+		return MM_ERROR_RADIO_INTERNAL;
+	}
 
 	/* register to audio focus */
 	ret = mmradio_audio_focus_register(&radio->sm, _mmradio_sound_focus_cb, (void *)radio);
@@ -405,6 +418,12 @@ _mmradio_destroy(mm_radio_t* radio)
 		return MM_ERROR_RADIO_INTERNAL;
 	}
 
+	ret = mm_sound_remove_device_connected_callback(radio->subs_id);
+	if ( ret )
+	{
+		MMRADIO_LOG_ERROR("mm_sound_remove_device_connected_callback error %d\n", ret);
+		return MM_ERROR_RADIO_INTERNAL;
+	}
 	_mmradio_unrealize( radio );
 
 	MMRADIO_LOG_FLEAVE();
@@ -1497,6 +1516,48 @@ void _mmradio_sound_focus_watch_cb(int id, mm_sound_focus_type_e focus_type, mm_
 		default:
 			MMRADIO_LOG_DEBUG("Unknown focus_state postMsg : %d\n", postMsg);
 			break;
+	}
+	MMRADIO_LOG_FLEAVE();
+}
+static void
+__mmradio_device_connected_cb(MMSoundDevice_t device, bool is_connected, void *user_data)
+{
+	mm_radio_t *radio = (mm_radio_t *) user_data;
+	int result = MM_ERROR_NONE;
+	mm_sound_device_type_e type;
+
+	MMRADIO_LOG_FENTER();
+	MMRADIO_CHECK_INSTANCE_RETURN_VOID(radio);
+
+	if (mm_sound_get_device_type (device, &type) != MM_ERROR_NONE)
+	{
+		debug_error("getting device type failed");
+	}
+	else
+	{
+		switch (type)
+		{
+			case MM_SOUND_DEVICE_TYPE_AUDIOJACK:
+			case MM_SOUND_DEVICE_TYPE_BLUETOOTH:
+			case MM_SOUND_DEVICE_TYPE_HDMI:
+			case MM_SOUND_DEVICE_TYPE_MIRRORING:
+			case MM_SOUND_DEVICE_TYPE_USB_AUDIO:
+			if (!is_connected)
+			{
+				MMRADIO_LOG_ERROR("sound device unplugged");
+				radio->sm.by_asm_cb = MMRADIO_ASM_CB_POSTMSG;
+				radio->sm.event_src = ASM_EVENT_SOURCE_EARJACK_UNPLUG;
+
+				result = _mmradio_stop(radio);
+				if (result != MM_ERROR_NONE)
+				{
+					MMRADIO_LOG_ERROR("failed to stop radio\n");
+				}
+			}
+			break;
+			default:
+			break;
+		}
 	}
 	MMRADIO_LOG_FLEAVE();
 }
