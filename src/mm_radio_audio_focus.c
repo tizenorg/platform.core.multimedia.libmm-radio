@@ -26,7 +26,7 @@
 #include "mm_sound_focus.h"
 #include "unistd.h"
 
-int mmradio_audio_focus_register(MMRadioAudioFocus* sm, mm_sound_focus_changed_cb callback, void* param)
+int mmradio_audio_focus_register(MMRadioAudioFocus* sm, mm_sound_focus_changed_cb callback, mm_sound_focus_changed_watch_cb watch_callback, void* param)
 {
 	/* read mm-session information */
 	int session_type = MM_SESSION_TYPE_MEDIA;
@@ -37,24 +37,26 @@ int mmradio_audio_focus_register(MMRadioAudioFocus* sm, mm_sound_focus_changed_c
 
 	MMRADIO_LOG_FENTER();
 
-	if ( ! sm )
+	if ( !sm )
 	{
 		MMRADIO_LOG_ERROR("invalid session handle\n");
 		return MM_ERROR_RADIO_NOT_INITIALIZED;
 	}
+	sm->cur_focus_type = FOCUS_NONE;
 
 	/* read session information */
 	errorcode = _mm_session_util_read_information(pid, &session_type, &session_flags);
 	if ( errorcode == MM_ERROR_NONE )
 	{
 		debug_warning("Read Session Information success. session_type : %d flags: %d \n", session_type, session_flags);
-		sm->sound_focus_register = true;
+		if (session_flags & MM_SESSION_OPTION_PAUSE_OTHERS)
+			sm->sound_focus_register = true;
 		sm->asm_session_flags = session_flags;
 		session_type = MM_SESSION_TYPE_MEDIA;
 	}
 	else
 	{
-		debug_warning("Read Session Information failed. skip sound focus function. errorcode %x \n" ,errorcode);
+		debug_warning("Read Session Information failed. skip sound focus register function. errorcode %x \n" ,errorcode);
 		sm->sound_focus_register = false;
 	}
 
@@ -70,20 +72,25 @@ int mmradio_audio_focus_register(MMRadioAudioFocus* sm, mm_sound_focus_changed_c
 		sm->pid = pid;
 	else
 		return MM_ERROR_INVALID_ARGUMENT;
-
-    MMRADIO_LOG_DEBUG("sound register focus pid[%d]", pid);
+	MMRADIO_LOG_DEBUG("sound register focus pid[%d]", pid);
 
 	mm_sound_focus_get_id(&handle);
 	sm->handle = handle;
-	if(sm->sound_focus_register)
+	if (sm->sound_focus_register)
 	{
 		if(mm_sound_register_focus_for_session(handle, pid, "radio", callback, param) != MM_ERROR_NONE)
 		{
 			MMRADIO_LOG_DEBUG("mm_sound_register_focus_for_session is failed\n");
 			return MM_ERROR_POLICY_BLOCKED;
 		}
-		else
-			MMRADIO_LOG_DEBUG("mm_sound_register_focus_for_session is success. handle : %d session_type : %d, flags : %x\n", handle, session_type, sm->asm_session_flags);
+	}
+	else
+	{
+		if(mm_sound_set_focus_watch_callback_for_session(sm->pid, FOCUS_FOR_BOTH, watch_callback, param, &sm->handle) != MM_ERROR_NONE)
+		{
+			MMRADIO_LOG_ERROR("mm_sound_set_focus_watch_callback_for_session failed\n");
+			return MM_ERROR_POLICY_BLOCKED;
+		}
 	}
 
 	MMRADIO_LOG_FLEAVE();
@@ -96,16 +103,24 @@ int mmradio_audio_focus_deregister(MMRadioAudioFocus* sm)
 {
 	MMRADIO_LOG_FENTER();
 
-	if ( ! sm )
+	if ( !sm )
 	{
 		MMRADIO_LOG_ERROR("invalid session handle\n");
 		return MM_ERROR_RADIO_NOT_INITIALIZED;
 	}
 
-	if(sm->sound_focus_register)
+	if (sm->sound_focus_register)
 	{
 		if (MM_ERROR_NONE != mm_sound_unregister_focus(sm->handle))
 			MMRADIO_LOG_ERROR("mm_sound_unregister_focus failed\n");
+	}
+	else
+	{
+		if (MM_ERROR_NONE != mm_sound_unset_focus_watch_callback(sm->handle))
+		{
+			MMRADIO_LOG_ERROR("mm_sound_unset_focus_watch_callback failed\n");
+			return MM_ERROR_POLICY_BLOCKED;
+		}
 	}
 
 	MMRADIO_LOG_FLEAVE();
@@ -113,62 +128,47 @@ int mmradio_audio_focus_deregister(MMRadioAudioFocus* sm)
 	return MM_ERROR_NONE;
 }
 
-int mmradio_set_audio_focus(MMRadioAudioFocus* sm, mm_sound_focus_changed_watch_cb callback, void* param)
+int mmradio_acquire_audio_focus(MMRadioAudioFocus* sm)
 {
 	int ret = MM_ERROR_NONE;
+	mm_sound_focus_type_e focus_type = FOCUS_NONE;
 	MMRADIO_LOG_FENTER();
 
-	MMRADIO_LOG_ERROR("mmradio_set_audio_focus asm_session_flags : %d\n", sm->asm_session_flags);
-	if(sm->asm_session_flags & MM_SESSION_OPTION_PAUSE_OTHERS)
+	MMRADIO_LOG_ERROR("mmradio_acquire_audio_focus asm_session_flags : %d sm->cur_focus_type : %d\n", sm->asm_session_flags, sm->cur_focus_type);
+	if (sm->asm_session_flags & MM_SESSION_OPTION_PAUSE_OTHERS)
 	{
-		ret = mm_sound_acquire_focus(sm->handle, FOCUS_FOR_BOTH, NULL);
-		if(ret != MM_ERROR_NONE)
+		focus_type = FOCUS_FOR_BOTH & ~(sm->cur_focus_type);
+		if (focus_type != FOCUS_NONE)
 		{
-			MMRADIO_LOG_ERROR("mm_sound_set_audio_focus failed\n");
-			return MM_ERROR_POLICY_BLOCKED;
+			ret = mm_sound_acquire_focus(sm->handle, focus_type, NULL);
+			if (ret != MM_ERROR_NONE)
+			{
+				MMRADIO_LOG_ERROR("mm_sound_acquire_focus is failed\n");
+				return MM_ERROR_POLICY_BLOCKED;
+			}
+			sm->cur_focus_type = FOCUS_FOR_BOTH;
 		}
-	}
-	else
-	{
-		ret = mm_sound_set_focus_watch_callback_for_session(sm->pid, FOCUS_FOR_BOTH, callback, param, &sm->handle);
-		if(ret != MM_ERROR_NONE)
-		{
-			MMRADIO_LOG_ERROR("mm_sound_set_audio_focus failed\n");
-			return MM_ERROR_POLICY_BLOCKED;
-		}
-
-		MMRADIO_LOG_ERROR("mmradio_set_audio_focus ret: %d\n", ret);
 	}
 
 	MMRADIO_LOG_FLEAVE();
 	return ret ;
 }
 
-int mmradio_unset_audio_focus(MMRadioAudioFocus* sm, void* param)
+int mmradio_release_audio_focus(MMRadioAudioFocus* sm)
 {
 	int ret = MM_ERROR_NONE;
 	MMRADIO_LOG_FENTER();
 
-	MMRADIO_LOG_ERROR("mmradio_set_audio_focus asm_session_flags : %d\n", sm->asm_session_flags);
-	if(sm->asm_session_flags & MM_SESSION_OPTION_PAUSE_OTHERS)
+	MMRADIO_LOG_ERROR("mmradio_release_audio_focus asm_session_flags : %d sm->cur_focus_type : %d\n", sm->asm_session_flags, sm->cur_focus_type);
+	if ((sm->asm_session_flags & MM_SESSION_OPTION_PAUSE_OTHERS) && (sm->cur_focus_type != FOCUS_NONE))
 	{
-		ret = mm_sound_release_focus(sm->handle, FOCUS_FOR_BOTH, NULL);
+		ret = mm_sound_release_focus(sm->handle, sm->cur_focus_type, NULL);
 		if(ret != MM_ERROR_NONE)
 		{
-			MMRADIO_LOG_ERROR("mmradio_unset_audio_focus failed\n");
+			MMRADIO_LOG_ERROR("mm_sound_release_focus is failed\n");
 			return MM_ERROR_POLICY_BLOCKED;
 		}
-	}
-	else
-	{
-		ret = mm_sound_unset_focus_watch_callback(sm->handle);
-		if(ret != MM_ERROR_NONE)
-		{
-			MMRADIO_LOG_ERROR("mmradio_unset_audio_focus failed\n");
-			return MM_ERROR_POLICY_BLOCKED;
-		}
-
-		MMRADIO_LOG_ERROR("mmradio_unset_audio_focus ret: %d\n", ret);
+		sm->cur_focus_type = FOCUS_NONE;
 	}
 
 	MMRADIO_LOG_FLEAVE();

@@ -38,6 +38,8 @@
 #include <mm_debug.h>
 #include <mm_message.h>
 
+#include <mm_sound.h>
+#include <mm_sound_focus.h>
 #include <mm_sound_device.h>
 
 #include "mm_radio_priv.h"
@@ -125,6 +127,12 @@ static void	__mmradio_scan_thread(mm_radio_t* radio);
 static bool 	__is_tunable_frequency(mm_radio_t* radio, int freq);
 static int 		__mmradio_set_deemphasis(mm_radio_t* radio);
 static int 		__mmradio_set_band_range(mm_radio_t* radio);
+static void __mmradio_sound_focus_cb(int id, mm_sound_focus_type_e focus_type,
+                             mm_sound_focus_state_e focus_state, const char *reason_for_change,
+                             const char *additional_info, void *user_data);
+static void __mmradio_sound_focus_watch_cb(int id, mm_sound_focus_type_e focus_type,
+                             mm_sound_focus_state_e focus_state, const char *reason_for_change,
+                             const char *additional_info, void *user_data);
 static void __mmradio_device_connected_cb(MMSoundDevice_t device, bool is_connected, void *user_data);
 
 /*===========================================================================
@@ -237,11 +245,11 @@ _mmradio_create_radio(mm_radio_t* radio)
 	}
 
 	/* register to audio focus */
-	ret = mmradio_audio_focus_register(&radio->sm, _mmradio_sound_focus_cb, (void *)radio);
+	ret = mmradio_audio_focus_register(&radio->sm, __mmradio_sound_focus_cb, __mmradio_sound_focus_watch_cb, (void *)radio);
 	if ( ret )
 	{
 		/* NOTE : we are dealing it as an error since we cannot expect it's behavior */
-		MMRADIO_LOG_ERROR("failed to register audio focus\n");
+		MMRADIO_LOG_ERROR("mmradio_audio_focus_register is failed\n");
 		return MM_ERROR_RADIO_INTERNAL;
 	}
 
@@ -384,9 +392,10 @@ _mmradio_unrealize(mm_radio_t* radio)
 
 	MMRADIO_SET_STATE( radio, MM_RADIO_STATE_NULL );
 
-	ret = mmradio_unset_audio_focus(&radio->sm, (void *)radio);
-	if (ret) {
-		MMRADIO_LOG_ERROR("failed to unset audio focus\n");
+	ret = mmradio_release_audio_focus(&radio->sm);
+	if (ret)
+	{
+		MMRADIO_LOG_ERROR("mmradio_release_audio_focus is failed\n");
 		return ret;
 	}
 #ifdef USE_GST_PIPELINE
@@ -684,7 +693,7 @@ _mmradio_start(mm_radio_t* radio)
 
 	MMRADIO_LOG_DEBUG("now tune to frequency : %d\n", radio->freq);
 
-	ret = mmradio_set_audio_focus(&radio->sm, _mmradio_sound_focus_watch_cb, (void *)radio);
+	ret = mmradio_acquire_audio_focus(&radio->sm);
 	if ( ret )
 	{
 		MMRADIO_LOG_ERROR("failed to set audio focus\n");
@@ -1429,7 +1438,8 @@ __mmradio_get_state(mm_radio_t* radio)
 	return radio->current_state;
 }
 
-void _mmradio_sound_focus_cb(int id, mm_sound_focus_type_e focus_type,
+static void
+__mmradio_sound_focus_cb(int id, mm_sound_focus_type_e focus_type,
                              mm_sound_focus_state_e focus_state, const char *reason_for_change,
                              const char *additional_info, void *user_data)
 {
@@ -1444,26 +1454,37 @@ void _mmradio_sound_focus_cb(int id, mm_sound_focus_type_e focus_type,
 	mmradio_get_audio_focus_reason(focus_state, reason_for_change, &event_source, &postMsg);
 	radio->sm.event_src = event_source;
 
+	if ((radio->sm.asm_session_flags & MM_SESSION_OPTION_UNINTERRUPTIBLE) && (radio->sm.event_src == ASM_EVENT_SOURCE_MEDIA)) {
+		MMRADIO_LOG_DEBUG("do nothing if session flag : uninterruptaible & reason_for_change : media");
+		goto FINISHED;
+	}
+
 	switch (focus_state) {
-		case FOCUS_IS_RELEASED:
-			radio->sm.by_asm_cb = MMRADIO_ASM_CB_POSTMSG;
-			result = _mmradio_stop(radio);
-			if (result) {
-				MMRADIO_LOG_ERROR("failed to stop radio\n");
+		case FOCUS_IS_RELEASED: {
+				radio->sm.cur_focus_type &= ~focus_type;
+				radio->sm.by_asm_cb = MMRADIO_ASM_CB_POSTMSG;
+
+				result = _mmradio_stop(radio);
+				if (result) {
+					MMRADIO_LOG_ERROR("failed to stop radio\n");
+				}
+				MMRADIO_LOG_DEBUG("FOCUS_IS_RELEASED cur_focus_type : %d\n", radio->sm.cur_focus_type);
 			}
-			MMRADIO_LOG_DEBUG("FOCUS_IS_RELEASED\n");
 			break;
 
 		case FOCUS_IS_ACQUIRED: {
 				MMMessageParamType msg = {0,};
 				msg.union_type = MM_MSG_UNION_CODE;
 				msg.code = event_source;
-				if (postMsg)
+
+				radio->sm.cur_focus_type |= focus_type;
+
+				if ((postMsg) && (FOCUS_FOR_BOTH == radio->sm.cur_focus_type))
 					MMRADIO_POST_MSG(radio, MM_MESSAGE_READY_TO_RESUME, &msg);
 
 				radio->sm.by_asm_cb = MMRADIO_ASM_CB_NONE;
 
-				MMRADIO_LOG_DEBUG("FOCUS_IS_ACQUIRED\n");
+				MMRADIO_LOG_DEBUG("FOCUS_IS_ACQUIRED cur_focus_type : %d\n", radio->sm.cur_focus_type);
 			}
 			break;
 
@@ -1471,10 +1492,13 @@ void _mmradio_sound_focus_cb(int id, mm_sound_focus_type_e focus_type,
 			MMRADIO_LOG_DEBUG("Unknown focus_state\n");
 			break;
 	}
+
+FINISHED:
 	MMRADIO_LOG_FLEAVE();
 }
 
-void _mmradio_sound_focus_watch_cb(int id, mm_sound_focus_type_e focus_type, mm_sound_focus_state_e focus_state,
+static void
+__mmradio_sound_focus_watch_cb(int id, mm_sound_focus_type_e focus_type, mm_sound_focus_state_e focus_state,
                                    const char *reason_for_change, const char *additional_info, void *user_data)
 {
 	mm_radio_t *radio = (mm_radio_t *) user_data;
@@ -1487,6 +1511,11 @@ void _mmradio_sound_focus_watch_cb(int id, mm_sound_focus_type_e focus_type, mm_
 
 	mmradio_get_audio_focus_reason(!focus_state, reason_for_change, &event_source, &postMsg);
 	radio->sm.event_src = event_source;
+
+	if ((radio->sm.asm_session_flags & MM_SESSION_OPTION_UNINTERRUPTIBLE) && (radio->sm.event_src == ASM_EVENT_SOURCE_MEDIA)) {
+		MMRADIO_LOG_DEBUG("do nothing if session flag : uninterruptaible && reason_for_change : media");
+		goto FINISHED;
+	}
 
 	switch (focus_state) {
 		case FOCUS_IS_RELEASED: {
@@ -1517,6 +1546,8 @@ void _mmradio_sound_focus_watch_cb(int id, mm_sound_focus_type_e focus_type, mm_
 			MMRADIO_LOG_DEBUG("Unknown focus_state postMsg : %d\n", postMsg);
 			break;
 	}
+
+FINISHED:
 	MMRADIO_LOG_FLEAVE();
 }
 static void
