@@ -1396,16 +1396,16 @@ __mmradio_set_state(mm_radio_t* radio, int new_state)
 	msg.state.current = radio->current_state;
 
 	/* post message to application */
-	switch( radio->sm.by_asm_cb )
+	switch( radio->sm.by_focus_cb )
 	{
-		case MMRADIO_ASM_CB_NONE:
+		case MMRADIO_FOCUS_CB_NONE:
 		{
 			msg_type = MM_MESSAGE_STATE_CHANGED;
 			MMRADIO_POST_MSG( radio, msg_type, &msg );
 		}
 		break;
 
-		case MMRADIO_ASM_CB_POSTMSG:
+		case MMRADIO_FOCUS_CB_POSTMSG:
 		{
 			msg_type = MM_MESSAGE_STATE_INTERRUPTED;
 			msg.union_type = MM_MSG_UNION_CODE;
@@ -1414,7 +1414,7 @@ __mmradio_set_state(mm_radio_t* radio, int new_state)
 		}
 		break;
 
-		case MMRADIO_ASM_CB_SKIP_POSTMSG:
+		case MMRADIO_FOCUS_CB_SKIP_POSTMSG:
 		default:
 		break;
 	}
@@ -1441,7 +1441,7 @@ __mmradio_sound_focus_cb(int id, mm_sound_focus_type_e focus_type,
                              const char *additional_info, void *user_data)
 {
 	mm_radio_t *radio = (mm_radio_t *) user_data;
-	ASM_event_sources_t event_source;
+	enum MMMessageInterruptedCode event_source;
 	int result = MM_ERROR_NONE;
 	int postMsg = false;
 
@@ -1454,7 +1454,7 @@ __mmradio_sound_focus_cb(int id, mm_sound_focus_type_e focus_type,
 	switch (focus_state) {
 		case FOCUS_IS_RELEASED: {
 				radio->sm.cur_focus_type &= ~focus_type;
-				radio->sm.by_asm_cb = MMRADIO_ASM_CB_POSTMSG;
+				radio->sm.by_focus_cb = MMRADIO_FOCUS_CB_POSTMSG;
 
 				result = _mmradio_stop(radio);
 				if (result) {
@@ -1474,7 +1474,7 @@ __mmradio_sound_focus_cb(int id, mm_sound_focus_type_e focus_type,
 				if ((postMsg) && (FOCUS_FOR_BOTH == radio->sm.cur_focus_type))
 					MMRADIO_POST_MSG(radio, MM_MESSAGE_READY_TO_RESUME, &msg);
 
-				radio->sm.by_asm_cb = MMRADIO_ASM_CB_NONE;
+				radio->sm.by_focus_cb = MMRADIO_FOCUS_CB_NONE;
 
 				MMRADIO_LOG_DEBUG("FOCUS_IS_ACQUIRED cur_focus_type : %d\n", radio->sm.cur_focus_type);
 			}
@@ -1514,8 +1514,8 @@ __mmradio_device_connected_cb(MMSoundDevice_t device, bool is_connected, void *u
 			if (!is_connected)
 			{
 				MMRADIO_LOG_ERROR("sound device unplugged");
-				radio->sm.by_asm_cb = MMRADIO_ASM_CB_POSTMSG;
-				radio->sm.event_src = ASM_EVENT_SOURCE_EARJACK_UNPLUG;
+				radio->sm.by_focus_cb = MMRADIO_FOCUS_CB_POSTMSG;
+				radio->sm.event_src = MM_MSG_CODE_INTERRUPTED_BY_EARJACK_UNPLUG;
 
 				result = _mmradio_stop(radio);
 				if (result != MM_ERROR_NONE)
