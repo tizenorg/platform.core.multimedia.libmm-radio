@@ -49,7 +49,7 @@ int mmradio_audio_focus_register(MMRadioAudioFocus* sm, mm_sound_focus_changed_c
 	if ( errorcode == MM_ERROR_NONE )
 	{
 		debug_warning("Read Session Information success. session_type : %d flags: %d \n", session_type, session_flags);
-		sm->asm_session_flags = session_flags;
+		sm->snd_session_flags = session_flags;
 		session_type = MM_SESSION_TYPE_MEDIA;
 	}
 	else
@@ -153,7 +153,7 @@ int mmradio_release_audio_focus(MMRadioAudioFocus* sm)
 
 #define AUDIO_FOCUS_REASON_MAX	128
 
-void mmradio_get_audio_focus_reason(mm_sound_focus_state_e focus_state, const char *reason_for_change, ASM_event_sources_t *event_source, int *postMsg)
+void mmradio_get_audio_focus_reason(mm_sound_focus_state_e focus_state, const char *reason_for_change, enum MMMessageInterruptedCode *event_source, int *postMsg)
 {
 	MMRADIO_LOG_FENTER();
 	MMRADIO_LOG_ERROR("mmradio_get_audio_focus_reason focus_state : %d reason_for_change :%s\n", focus_state, reason_for_change);
@@ -165,43 +165,43 @@ void mmradio_get_audio_focus_reason(mm_sound_focus_state_e focus_state, const ch
 		)
 	{
 		if(focus_state == FOCUS_IS_RELEASED)
-			*event_source = ASM_EVENT_SOURCE_CALL_START;
+			*event_source = MM_MSG_CODE_INTERRUPTED_BY_CALL_START;
 		else if(focus_state == FOCUS_IS_ACQUIRED)
-			*event_source = ASM_EVENT_SOURCE_CALL_END;
+			*event_source = MM_MSG_CODE_INTERRUPTED_BY_CALL_END;;
 		*postMsg = true;
 	}
 	else if(0 == strncmp(reason_for_change, "alarm", AUDIO_FOCUS_REASON_MAX))
 	{
 		if(focus_state == FOCUS_IS_RELEASED)
-			*event_source = ASM_EVENT_SOURCE_ALARM_START;
+			*event_source = MM_MSG_CODE_INTERRUPTED_BY_ALARM_START;
 		else if(focus_state == FOCUS_IS_ACQUIRED)
-			*event_source = ASM_EVENT_SOURCE_ALARM_END;
+			*event_source = MM_MSG_CODE_INTERRUPTED_BY_ALARM_END;
 		*postMsg = true;
 	}
 	else if(0 == strncmp(reason_for_change, "notification", AUDIO_FOCUS_REASON_MAX))
 	{
 		if(focus_state == FOCUS_IS_RELEASED)
-			*event_source = ASM_EVENT_SOURCE_NOTIFY_START;
+			*event_source = MM_MSG_CODE_INTERRUPTED_BY_NOTIFICATION_START;
 		else if(focus_state == FOCUS_IS_ACQUIRED)
-			*event_source = ASM_EVENT_SOURCE_NOTIFY_END;
+			*event_source = MM_MSG_CODE_INTERRUPTED_BY_NOTIFICATION_END;
 		*postMsg = true;
 	}
 	else if(0 == strncmp(reason_for_change, "emergency", AUDIO_FOCUS_REASON_MAX))
 	{
 		if(focus_state == FOCUS_IS_RELEASED)
-			*event_source = ASM_EVENT_SOURCE_EMERGENCY_START;
+			*event_source = MM_MSG_CODE_INTERRUPTED_BY_EMERGENCY_START;
 		else if(focus_state == FOCUS_IS_ACQUIRED)
-			*event_source = ASM_EVENT_SOURCE_EMERGENCY_END;
+			*event_source = MM_MSG_CODE_INTERRUPTED_BY_EMERGENCY_END;
 		*postMsg = false;
 	}
 	else if(0 == strncmp(reason_for_change, "media", AUDIO_FOCUS_REASON_MAX))
 	{
-		*event_source = ASM_EVENT_SOURCE_MEDIA;
+		*event_source = MM_MSG_CODE_INTERRUPTED_BY_MEDIA;
 		*postMsg = false;
 	}
 	else
 	{
-		*event_source = ASM_EVENT_SOURCE_MEDIA;
+		*event_source = MM_MSG_CODE_INTERRUPTED_BY_MEDIA;
 		*postMsg = false;
 	}
 	MMRADIO_LOG_FLEAVE();

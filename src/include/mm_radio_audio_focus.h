@@ -29,18 +29,19 @@
 #include <mm_session_private.h>
 #include <audio-session-manager.h>
 #include <mm_sound_focus.h>
+#include <mm_message.h>
 
 enum {
-	MMRADIO_ASM_CB_NONE,
-	MMRADIO_ASM_CB_POSTMSG,
-	MMRADIO_ASM_CB_SKIP_POSTMSG
+	MMRADIO_FOCUS_CB_NONE,
+	MMRADIO_FOCUS_CB_POSTMSG,
+	MMRADIO_FOCUS_CB_SKIP_POSTMSG
 };
 typedef struct {
 	int handle;
 	int pid;
-	int by_asm_cb;
+	int by_focus_cb;
 	int event_src;
-	int asm_session_flags;
+	int snd_session_flags;
 	mm_sound_focus_type_e cur_focus_type;
 } MMRadioAudioFocus;
 
@@ -48,6 +49,6 @@ int mmradio_audio_focus_register(MMRadioAudioFocus* sm, mm_sound_focus_changed_c
 int mmradio_audio_focus_deregister(MMRadioAudioFocus* sm);
 int mmradio_acquire_audio_focus(MMRadioAudioFocus* sm);
 int mmradio_release_audio_focus(MMRadioAudioFocus* sm);
-void mmradio_get_audio_focus_reason(mm_sound_focus_state_e focus_state, const char *reason_for_change, ASM_event_sources_t *event_source, int *postMsg);
+void mmradio_get_audio_focus_reason(mm_sound_focus_state_e focus_state, const char *reason_for_change, enum MMMessageInterruptedCode *event_source, int *postMsg);
 
 #endif /* MM_RADIO_AUDIO_FOCUS_H_ */
