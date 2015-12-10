@@ -26,7 +26,7 @@
 #include "mm_sound_focus.h"
 #include "unistd.h"
 
-int mmradio_audio_focus_register(MMRadioAudioFocus* sm, mm_sound_focus_changed_cb callback, void* param)
+int mmradio_audio_focus_register(MMRadioAudioFocus *sm, mm_sound_focus_changed_cb callback, void *param)
 {
 	/* read mm-session information */
 	int session_type = MM_SESSION_TYPE_MEDIA;
@@ -37,8 +37,7 @@ int mmradio_audio_focus_register(MMRadioAudioFocus* sm, mm_sound_focus_changed_c
 
 	MMRADIO_LOG_FENTER();
 
-	if ( !sm )
-	{
+	if (!sm) {
 		MMRADIO_LOG_ERROR("invalid session handle\n");
 		return MM_ERROR_RADIO_NOT_INITIALIZED;
 	}
@@ -46,20 +45,16 @@ int mmradio_audio_focus_register(MMRadioAudioFocus* sm, mm_sound_focus_changed_c
 
 	/* read session information */
 	errorcode = _mm_session_util_read_information(pid, &session_type, &session_flags);
-	if ( errorcode == MM_ERROR_NONE )
-	{
+	if (errorcode == MM_ERROR_NONE) {
 		debug_warning("Read Session Information success. session_type : %d flags: %d \n", session_type, session_flags);
 		sm->snd_session_flags = session_flags;
 		session_type = MM_SESSION_TYPE_MEDIA;
-	}
-	else
-	{
-		debug_warning("Read Session Information failed. skip sound focus register function. errorcode %x \n" ,errorcode);
+	} else {
+		debug_warning("Read Session Information failed. skip sound focus register function. errorcode %x \n", errorcode);
 	}
 
 	/* check if it's MEDIA type */
-	if ( session_type != MM_SESSION_TYPE_MEDIA)
-	{
+	if (session_type != MM_SESSION_TYPE_MEDIA) {
 		MMRADIO_LOG_DEBUG("session type is not MEDIA (%d)\n", session_type);
 		return MM_ERROR_RADIO_INTERNAL;
 	}
@@ -72,8 +67,7 @@ int mmradio_audio_focus_register(MMRadioAudioFocus* sm, mm_sound_focus_changed_c
 	mm_sound_focus_get_id(&handle);
 	sm->handle = handle;
 
-	if(mm_sound_register_focus_for_session(handle, pid, "radio", callback, param) != MM_ERROR_NONE)
-	{
+	if (mm_sound_register_focus_for_session(handle, pid, "radio", callback, param) != MM_ERROR_NONE) {
 		MMRADIO_LOG_DEBUG("mm_sound_register_focus_for_session is failed\n");
 		return MM_ERROR_POLICY_BLOCKED;
 	}
@@ -83,13 +77,11 @@ int mmradio_audio_focus_register(MMRadioAudioFocus* sm, mm_sound_focus_changed_c
 	return MM_ERROR_NONE;
 }
 
-
-int mmradio_audio_focus_deregister(MMRadioAudioFocus* sm)
+int mmradio_audio_focus_deregister(MMRadioAudioFocus *sm)
 {
 	MMRADIO_LOG_FENTER();
 
-	if ( !sm )
-	{
+	if (!sm) {
 		MMRADIO_LOG_ERROR("invalid session handle\n");
 		return MM_ERROR_RADIO_NOT_INITIALIZED;
 	}
@@ -97,13 +89,12 @@ int mmradio_audio_focus_deregister(MMRadioAudioFocus* sm)
 	if (MM_ERROR_NONE != mm_sound_unregister_focus(sm->handle))
 		MMRADIO_LOG_ERROR("mm_sound_unregister_focus failed\n");
 
-
 	MMRADIO_LOG_FLEAVE();
 
 	return MM_ERROR_NONE;
 }
 
-int mmradio_acquire_audio_focus(MMRadioAudioFocus* sm)
+int mmradio_acquire_audio_focus(MMRadioAudioFocus *sm)
 {
 	int ret = MM_ERROR_NONE;
 	mm_sound_focus_type_e focus_type = FOCUS_NONE;
@@ -112,33 +103,28 @@ int mmradio_acquire_audio_focus(MMRadioAudioFocus* sm)
 	MMRADIO_LOG_ERROR("mmradio_acquire_audio_focus sm->cur_focus_type : %d\n", sm->cur_focus_type);
 
 	focus_type = FOCUS_FOR_BOTH & ~(sm->cur_focus_type);
-	if (focus_type != FOCUS_NONE)
-	{
+	if (focus_type != FOCUS_NONE) {
 		ret = mm_sound_acquire_focus(sm->handle, focus_type, NULL);
-		if (ret != MM_ERROR_NONE)
-		{
+		if (ret != MM_ERROR_NONE) {
 			MMRADIO_LOG_ERROR("mm_sound_acquire_focus is failed\n");
 			return MM_ERROR_POLICY_BLOCKED;
 		}
 		sm->cur_focus_type = FOCUS_FOR_BOTH;
 	}
 
-
 	MMRADIO_LOG_FLEAVE();
-	return ret ;
+	return ret;
 }
 
-int mmradio_release_audio_focus(MMRadioAudioFocus* sm)
+int mmradio_release_audio_focus(MMRadioAudioFocus *sm)
 {
 	int ret = MM_ERROR_NONE;
 	MMRADIO_LOG_FENTER();
 
 	MMRADIO_LOG_ERROR("mmradio_release_audio_focus sm->cur_focus_type : %d\n", sm->cur_focus_type);
-	if (sm->cur_focus_type != FOCUS_NONE)
-	{
+	if (sm->cur_focus_type != FOCUS_NONE) {
 		ret = mm_sound_release_focus(sm->handle, sm->cur_focus_type, NULL);
-		if(ret != MM_ERROR_NONE)
-		{
+		if (ret != MM_ERROR_NONE) {
 			MMRADIO_LOG_ERROR("mm_sound_release_focus is failed\n");
 			return MM_ERROR_POLICY_BLOCKED;
 		}
@@ -146,7 +132,7 @@ int mmradio_release_audio_focus(MMRadioAudioFocus* sm)
 	}
 
 	MMRADIO_LOG_FLEAVE();
-	return ret ;
+	return ret;
 }
 
 #define AUDIO_FOCUS_REASON_MAX	128
@@ -156,49 +142,38 @@ void mmradio_get_audio_focus_reason(mm_sound_focus_state_e focus_state, const ch
 	MMRADIO_LOG_FENTER();
 	MMRADIO_LOG_ERROR("mmradio_get_audio_focus_reason focus_state : %d reason_for_change :%s\n", focus_state, reason_for_change);
 
-	if(0 == strncmp(reason_for_change, "call-voice", AUDIO_FOCUS_REASON_MAX)
+	if (0 == strncmp(reason_for_change, "call-voice", AUDIO_FOCUS_REASON_MAX)
 		|| (0 == strncmp(reason_for_change, "voip", AUDIO_FOCUS_REASON_MAX))
 		|| (0 == strncmp(reason_for_change, "ringtone-voip", AUDIO_FOCUS_REASON_MAX))
 		|| (0 == strncmp(reason_for_change, "ringtone-call", AUDIO_FOCUS_REASON_MAX))
-		)
-	{
-		if(focus_state == FOCUS_IS_RELEASED)
+		) {
+		if (focus_state == FOCUS_IS_RELEASED)
 			*event_source = MM_MSG_CODE_INTERRUPTED_BY_CALL_START;
-		else if(focus_state == FOCUS_IS_ACQUIRED)
+		else if (focus_state == FOCUS_IS_ACQUIRED)
 			*event_source = MM_MSG_CODE_INTERRUPTED_BY_CALL_END;
 		*postMsg = true;
-	}
-	else if(0 == strncmp(reason_for_change, "alarm", AUDIO_FOCUS_REASON_MAX))
-	{
-		if(focus_state == FOCUS_IS_RELEASED)
+	} else if (0 == strncmp(reason_for_change, "alarm", AUDIO_FOCUS_REASON_MAX)) {
+		if (focus_state == FOCUS_IS_RELEASED)
 			*event_source = MM_MSG_CODE_INTERRUPTED_BY_ALARM_START;
-		else if(focus_state == FOCUS_IS_ACQUIRED)
+		else if (focus_state == FOCUS_IS_ACQUIRED)
 			*event_source = MM_MSG_CODE_INTERRUPTED_BY_ALARM_END;
 		*postMsg = true;
-	}
-	else if(0 == strncmp(reason_for_change, "notification", AUDIO_FOCUS_REASON_MAX))
-	{
-		if(focus_state == FOCUS_IS_RELEASED)
+	} else if (0 == strncmp(reason_for_change, "notification", AUDIO_FOCUS_REASON_MAX)) {
+		if (focus_state == FOCUS_IS_RELEASED)
 			*event_source = MM_MSG_CODE_INTERRUPTED_BY_NOTIFICATION_START;
-		else if(focus_state == FOCUS_IS_ACQUIRED)
+		else if (focus_state == FOCUS_IS_ACQUIRED)
 			*event_source = MM_MSG_CODE_INTERRUPTED_BY_NOTIFICATION_END;
 		*postMsg = true;
-	}
-	else if(0 == strncmp(reason_for_change, "emergency", AUDIO_FOCUS_REASON_MAX))
-	{
-		if(focus_state == FOCUS_IS_RELEASED)
+	} else if (0 == strncmp(reason_for_change, "emergency", AUDIO_FOCUS_REASON_MAX)) {
+		if (focus_state == FOCUS_IS_RELEASED)
 			*event_source = MM_MSG_CODE_INTERRUPTED_BY_EMERGENCY_START;
-		else if(focus_state == FOCUS_IS_ACQUIRED)
+		else if (focus_state == FOCUS_IS_ACQUIRED)
 			*event_source = MM_MSG_CODE_INTERRUPTED_BY_EMERGENCY_END;
 		*postMsg = false;
-	}
-	else if(0 == strncmp(reason_for_change, "media", AUDIO_FOCUS_REASON_MAX))
-	{
+	} else if (0 == strncmp(reason_for_change, "media", AUDIO_FOCUS_REASON_MAX)) {
 		*event_source = MM_MSG_CODE_INTERRUPTED_BY_MEDIA;
 		*postMsg = false;
-	}
-	else
-	{
+	} else {
 		*event_source = MM_MSG_CODE_INTERRUPTED_BY_MEDIA;
 		*postMsg = false;
 	}

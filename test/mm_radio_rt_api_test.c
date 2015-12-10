@@ -27,168 +27,164 @@
 #define _MAX_INPUT_STRING_ 100
 
 static int __menu(void);
-static void __call_api( int choosen );
+static void __call_api(int choosen);
 static int __msg_rt_callback(int message, void *param, void *user_param);
 
 static MMHandleType g_my_radio = 0;
 
-void __call_api( int choosen )
+void __call_api(int choosen)
 {
 	int ret = MM_ERROR_NONE;
 
-	switch( choosen )
-	{
-		case 1:
+	switch (choosen) {
+	case 1:
 		{
-			RADIO_TEST__( mm_radio_create( &g_my_radio ); )
-			RADIO_TEST__( mm_radio_set_message_callback( g_my_radio, __msg_rt_callback, g_my_radio); )
+			RADIO_TEST__(mm_radio_create(&g_my_radio);)
+			RADIO_TEST__(mm_radio_set_message_callback(g_my_radio, __msg_rt_callback, g_my_radio);)
 		}
 		break;
 
-		case 2:
+	case 2:
 		{
-			RADIO_TEST__( mm_radio_destroy( g_my_radio ); )
+			RADIO_TEST__(mm_radio_destroy(g_my_radio);)
 			g_my_radio = 0;
 		}
 		break;
 
-		case 3:
+	case 3:
 		{
-			RADIO_TEST__( mm_radio_realize(g_my_radio ); )
+			RADIO_TEST__(mm_radio_realize(g_my_radio);)
 		}
 		break;
 
-		case 4:
+	case 4:
 		{
-			RADIO_TEST__( mm_radio_unrealize(g_my_radio ); )
+			RADIO_TEST__(mm_radio_unrealize(g_my_radio);)
 		}
 		break;
 
-		case 7:
+	case 7:
 		{
 			MMRadioStateType state = 0;
-			RADIO_TEST__( mm_radio_get_state(g_my_radio, &state); )
-
+			RADIO_TEST__(mm_radio_get_state(g_my_radio, &state);)
 			printf("state : %d\n", state);
 		}
 		break;
 
-		case 8:
+	case 8:
 		{
-			RADIO_TEST__( mm_radio_start(g_my_radio); )
+			RADIO_TEST__(mm_radio_start(g_my_radio);)
 		}
 		break;
 
-		case 9:
+	case 9:
 		{
-			RADIO_TEST__( mm_radio_stop(g_my_radio); )
+			RADIO_TEST__(mm_radio_stop(g_my_radio);)
 		}
 		break;
 
-		case 10:
+	case 10:
 		{
 			int direction = 0;
 			printf("input seek direction(0:UP/1:DOWN) : ");
 			if (scanf("%d", &direction) == 0)
 				return;
 
-			RADIO_TEST__( mm_radio_seek(g_my_radio, direction); )
+			RADIO_TEST__(mm_radio_seek(g_my_radio, direction);)
 		}
 		break;
 
-		case 11:
+	case 11:
 		{
 			int freq = 0;
 			printf("input freq : ");
 			if (scanf("%d", &freq) == 0)
 				return;
 
-			RADIO_TEST__( mm_radio_set_frequency(g_my_radio, freq); )
+			RADIO_TEST__(mm_radio_set_frequency(g_my_radio, freq);)
 		}
 		break;
 
-		case 12:
+	case 12:
 		{
 			int freq = 0;
-			RADIO_TEST__( mm_radio_get_frequency(g_my_radio, &freq ); )
-
+			RADIO_TEST__(mm_radio_get_frequency(g_my_radio, &freq);)
 			printf("freq : %d\n", freq);
 		}
 		break;
 
-		case 13:
+	case 13:
 		{
-			RADIO_TEST__( mm_radio_scan_start(g_my_radio); )
+			RADIO_TEST__(mm_radio_scan_start(g_my_radio);)
 		}
 		break;
 
-		case 14:
+	case 14:
 		{
-			RADIO_TEST__( mm_radio_scan_stop(g_my_radio); )
+			RADIO_TEST__(mm_radio_scan_stop(g_my_radio);)
 		}
 		break;
 
-		case 16:
+	case 16:
 		{
 			int muted = 0;
 			printf("select one(0:UNMUTE/1:MUTE) : ");
-			if ( scanf("%d", &muted) == 0)
+			if (scanf("%d", &muted) == 0)
 				return;
-			RADIO_TEST__( mm_radio_set_mute(g_my_radio, muted); )
+			RADIO_TEST__(mm_radio_set_mute(g_my_radio, muted);)
 		}
 		break;
 
-		case 17:
+	case 17:
 		{
 			MMRadioRegionType type = 0;
-			RADIO_TEST__( mm_radio_get_region_type(g_my_radio, &type ); )
+			RADIO_TEST__(mm_radio_get_region_type(g_my_radio, &type);)
 			printf("region type : %d\n", type);
 		}
 		break;
 
-		case 18:
+	case 18:
 		{
 			unsigned int min_freq = 0;
 			unsigned int max_freq = 0;
-			RADIO_TEST__( mm_radio_get_region_frequency_range(g_my_radio, &min_freq, &max_freq ); )
+			RADIO_TEST__(mm_radio_get_region_frequency_range(g_my_radio, &min_freq, &max_freq);)
 			printf("region band range: %d ~ %d KHz\n", min_freq, max_freq);
 		}
 		break;
-		case 19:
+	case 19:
 		{
 			int signal_strength = 0;
-			RADIO_TEST__( mm_radio_get_signal_strength(g_my_radio, &signal_strength); )
+			RADIO_TEST__(mm_radio_get_signal_strength(g_my_radio, &signal_strength);)
 			printf("signal strength is : %d \n", signal_strength);
 		}
 		break;
-		case 20:
+	case 20:
 		{
 			int channel_spacing = 0;
-			RADIO_TEST__( mm_radio_get_channel_spacing(g_my_radio, &channel_spacing); )
+			RADIO_TEST__(mm_radio_get_channel_spacing(g_my_radio, &channel_spacing);)
 			printf("channel_spacing is : %d \n", channel_spacing);
 		}
 		break;
 
-		default:
-			break;
+	default:
+		break;
 	}
 }
 
 int mm_radio_rt_api_test(void)
 {
-	while(1)
-	{
+	while (1) {
 		int choosen = 0;
 
 		choosen = __menu();
 
-		if ( choosen == -1)
+		if (choosen == -1)
 			continue;
 
-		if ( choosen == 0 )
+		if (choosen == 0)
 			break;
 
-		__call_api( choosen );
+		__call_api(choosen);
 	}
 
 	printf("radio test client finished\n");
@@ -224,37 +220,30 @@ int __menu(void)
 	printf("---------------------------------------------------------\n");
 	printf("choose one : ");
 
-	if ( scanf("%d", &menu_item) == 0)
-	{
+	if (scanf("%d", &menu_item) == 0) {
 		char temp[_MAX_INPUT_STRING_];
-        if (scanf("%99s", temp) ==0)
-        {
-            printf("Error while flushing the input buffer - but lets continue\n");
-        }
+		if (scanf("%99s", temp) == 0)
+			printf("Error while flushing the input buffer - but lets continue\n");
 		return -1;
-    }
+	}
 
-	if ( menu_item > MENU_ITEM_MAX )
+	if (menu_item > MENU_ITEM_MAX)
 		menu_item = -1;
 
 	return menu_item;
 }
 
-
 int __msg_rt_callback(int message, void *pParam, void *user_param)
 {
-	MMMessageParamType* param = (MMMessageParamType*)pParam;
-	MMHandleType radio = (MMHandleType) user_param;
+	MMMessageParamType *param = (MMMessageParamType *)pParam;
+	MMHandleType radio = (MMHandleType)user_param;
 	int ret = 0;
 
 	printf("incomming message : %d\n", message);
 
-	switch(message)
-	{
+	switch (message) {
 	case MM_MESSAGE_STATE_CHANGED:
-
-		printf("MM_MESSAGE_STATE_CHANGED: current : %d    old : %d\n"
-				, param->state.current, param->state.previous);
+		printf("MM_MESSAGE_STATE_CHANGED: current : %d    old : %d\n", param->state.current, param->state.previous);
 		break;
 	case MM_MESSAGE_RADIO_SCAN_START:
 		printf("MM_MESSAGE_RADIO_SCAN_START\n");
@@ -268,11 +257,11 @@ int __msg_rt_callback(int message, void *pParam, void *user_param)
 		break;
 	case MM_MESSAGE_RADIO_SCAN_FINISH:
 		printf("MM_MESSAGE_RADIO_SCAN_FINISHED\n");
-		RADIO_TEST__( mm_radio_scan_stop(radio); )
+		RADIO_TEST__(mm_radio_scan_stop(radio);)
 		break;
 	case MM_MESSAGE_RADIO_SEEK_START:
-			printf("MM_MESSAGE_RADIO_SEEK_START\n");
-			break;
+		printf("MM_MESSAGE_RADIO_SEEK_START\n");
+		break;
 	case MM_MESSAGE_RADIO_SEEK_FINISH:
 		printf("MM_MESSAGE_RADIO_SEEK_FINISHED : freq : %d\n", param->radio_scan.frequency);
 		break;
@@ -281,7 +270,7 @@ int __msg_rt_callback(int message, void *pParam, void *user_param)
 		break;
 	case MM_MESSAGE_READY_TO_RESUME:
 		printf("MM_MESSAGE_READY_TO_RESUME\n");
-		RADIO_TEST__( mm_radio_start(radio); )
+		RADIO_TEST__(mm_radio_start(radio);)
 		break;
 	default:
 		printf("ERROR : unknown message received!\n");
