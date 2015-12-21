@@ -11,7 +11,6 @@ libmmfradio_la_CFLAGS = -I. -I./include \
 			$(GTHREAD_CFLAGS) \
 			$(MMCOMMON_CFLAGS) \
 			$(MMSESSION_CFLAGS) \
-			$(AUDIOSESSIONMGR_CFLAGS) \
 			$(MMSOUND_CFLAGS) \
 			$(GST_CFLAGS) \
 			$(GSTAPP_CFLAGS) \
@@ -20,7 +19,6 @@ libmmfradio_la_CFLAGS = -I. -I./include \
 libmmfradio_la_LIBADD = $(GTHREAD_LIBS) \
 			$(MMCOMMON_LIBS) \
 			$(MMSESSION_LIBS) \
-			$(AUDIOSESSIONMGR_LIBS) \
 			$(MMSOUND_LIBS)  \
 			$(GST_LIBS)  \
 			$(GSTAPP_LIBS)
