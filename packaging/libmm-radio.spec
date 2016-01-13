@@ -1,22 +1,19 @@
 Name:       libmm-radio
 Summary:    Multimedia Framework Radio Library
-Version:    0.2.3
-Release:    2
+Version:    0.2.4
+Release:    0
 Group:      System/Libraries
 License:    Apache-2.0
 Source0:    %{name}-%{version}.tar.gz
 Source1001: 	libmm-radio.manifest
+Requires(post): /sbin/ldconfig
+Requires(postun): /sbin/ldconfig
 BuildRequires:  pkgconfig(mm-common)
 BuildRequires:  pkgconfig(mm-log)
 BuildRequires:  pkgconfig(mm-session)
 BuildRequires:  pkgconfig(mm-sound)
-%if %{defined with_Gstreamer0.10}
-BuildRequires:  pkgconfig(gstreamer-0.10)
-BuildRequires:  pkgconfig(gstreamer-plugins-base-0.10)
-%else
 BuildRequires:  pkgconfig(gstreamer-1.0)
 BuildRequires:  pkgconfig(gstreamer-plugins-base-1.0)
-%endif
 
 %description
 Description: Multimedia Framework Radio Library
@@ -45,19 +42,22 @@ cp %{SOURCE1001} .
 %build
 ./autogen.sh
 
-%if %{defined with_Gstreamer0.10}
-export GSTREAMER_API=""
-%else
-export GSTREAMER_API="-DGST_API_VERSION_1=1"
-export use_gstreamer_1=1
-%endif
+#export GSTREAMER_API="-DGST_API_VERSION_1=1"
+#export use_gstreamer_1=1
 
-CFLAGS=" %{optflags}  -DGST_EXT_TIME_ANALYSIS -DEXPORT_API=\"__attribute__((visibility(\\\"default\\\")))\" $GSTREAMER_API"; export CFLAGS;
-%configure --disable-static --prefix=%{_prefix}
+#CFLAGS=" %{optflags} -Wall -DGST_EXT_TIME_ANALYSIS -DEXPORT_API=\"__attribute__((visibility(\\\"default\\\")))\" $GSTREAMER_API"; export CFLAGS;
+CFLAGS=" %{optflags} -Wall -DGST_EXT_TIME_ANALYSIS -DEXPORT_API=\"__attribute__((visibility(\\\"default\\\")))\" "; export CFLAGS;
+
+%configure \
+--enable-emulator \
+--disable-static --prefix=%{_prefix}
 
 make %{?jobs:-j%jobs}
 
 %install
+rm -rf %{buildroot}
+mkdir -p %{buildroot}/usr/share/license
+cp LICENSE.APLv2 %{buildroot}/usr/share/license/%{name}
 %make_install
 
 
@@ -70,7 +70,7 @@ make %{?jobs:-j%jobs}
 %manifest %{name}.manifest
 %defattr(-,root,root,-)
 %{_libdir}/libmmfradio.so.*
-
+/usr/share/license/%{name}
 
 
 %files devel

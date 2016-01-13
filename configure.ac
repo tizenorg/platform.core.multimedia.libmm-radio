@@ -8,10 +8,10 @@ AC_CONFIG_SRCDIR([src/mm_radio.c])
 AC_CONFIG_HEADER([config.h])
 
 # Checks for programs.
-m4_ifdef([AM_PROG_AR], [AM_PROG_AR])
 AC_PROG_LIBTOOL
+m4_pattern_allow([AM_PROG_AR])
+AM_PROG_AR
 AC_PROG_CC
-AM_PROG_CC_C_O
 
 # Checks for libraries.
 
@@ -38,7 +38,6 @@ PKG_CHECK_MODULES(MMCOMMON, mm-common)
 AC_SUBST(MMCOMMON_CFLAGS)
 AC_SUBST(MMCOMMON_LIBS)
 
-if test "$use_gstreamer_1" = "1"; then
   PKG_CHECK_MODULES(GST, gstreamer-1.0)
   AC_SUBST(GST_CFLAGS)
   AC_SUBST(GST_LIBS)
@@ -46,15 +45,6 @@ if test "$use_gstreamer_1" = "1"; then
   PKG_CHECK_MODULES(GSTAPP, gstreamer-app-1.0)
   AC_SUBST(GSTAPP_CFLAGS)
   AC_SUBST(GSTAPP_LIBS)
-else
-  PKG_CHECK_MODULES(GST, gstreamer-0.10)
-  AC_SUBST(GST_CFLAGS)
-  AC_SUBST(GST_LIBS)
-
-  PKG_CHECK_MODULES(GSTAPP, gstreamer-app-0.10)
-  AC_SUBST(GSTAPP_CFLAGS)
-  AC_SUBST(GSTAPP_LIBS)
-fi
 
 PKG_CHECK_MODULES(MMSESSION, mm-session)
 AC_SUBST(MMSESSION_CFLAGS)
@@ -63,6 +53,16 @@ AC_SUBST(MMSESSION_LIBS)
 PKG_CHECK_MODULES(MMSOUND, mm-sound)
 AC_SUBST(MMSOUND_CFLAGS)
 AC_SUBST(MMSOUND_LIBS)
+
+AC_ARG_ENABLE(emulator, AC_HELP_STRING([--enable-emulator], [using emulator interface]),
+[
+ case "${enableval}" in
+         yes) ENABLE_EMULATOR=yes ;;
+         no)  ENABLE_EMULATOR=no ;;
+         *)   AC_MSG_ERROR(bad value ${enableval} for --enable-emulator) ;;
+ esac
+ ],[ENABLE_EMULATOR=no])
+AM_CONDITIONAL(ENABLE_EMULATOR, test "x$ENABLE_EMULATOR" = "xyes")
 
 AC_CONFIG_FILES([
 	Makefile

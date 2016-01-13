@@ -4,8 +4,12 @@ includelibmmfradiodir = $(includedir)/mmf
 includelibmmfradio_HEADERS = include/mm_radio.h
 
 libmmfradio_la_SOURCES = mm_radio.c \
-			 mm_radio_priv.c \
 			 mm_radio_audio_focus.c
+if ENABLE_EMULATOR
+libmmfradio_la_SOURCES += mm_radio_priv_emulator.c
+else
+libmmfradio_la_SOURCES += mm_radio_priv.c
+endif
 
 libmmfradio_la_CFLAGS = -I. -I./include \
 			$(GTHREAD_CFLAGS) \
