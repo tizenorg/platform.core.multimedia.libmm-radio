@@ -875,8 +875,8 @@ int _mm_radio_get_signal_strength(mm_radio_t * radio, int *value)
 		return MM_ERROR_NONE;
 	}
 
-	srand((unsigned)time(NULL));
-	*value = 0 - ((rand() % 20 + 1) + 80);
+	unsigned int seed = (unsigned)time(NULL);
+	*value = 0 - ((rand_r(&seed) % 20 + 1) + 80);
 	MMRADIO_LOG_FLEAVE();
 	return MM_ERROR_NONE;
 }
