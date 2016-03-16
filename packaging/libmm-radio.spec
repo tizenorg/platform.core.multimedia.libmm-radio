@@ -46,7 +46,7 @@ cp %{SOURCE1001} .
 #export use_gstreamer_1=1
 
 #CFLAGS=" %{optflags} -Wall -DGST_EXT_TIME_ANALYSIS -DEXPORT_API=\"__attribute__((visibility(\\\"default\\\")))\" $GSTREAMER_API"; export CFLAGS;
-CFLAGS=" %{optflags} -Wall -DGST_EXT_TIME_ANALYSIS -DEXPORT_API=\"__attribute__((visibility(\\\"default\\\")))\" "; export CFLAGS;
+CFLAGS=" %{optflags} -Wall -DGST_EXT_TIME_ANALYSIS -DEXPORT_API=\"__attribute__((visibility(\\\"default\\\")))\" -Werror"; export CFLAGS;
 
 %configure \
 --enable-emulator \

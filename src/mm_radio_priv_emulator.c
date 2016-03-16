@@ -306,7 +306,7 @@ int _mmradio_realize(mm_radio_t * radio)
 
 	return MM_ERROR_NONE;
 
- error:
+/* error:
 	if (radio->radio_fd >= 0) {
 		close(radio->radio_fd);
 		radio->radio_fd = -1;
@@ -315,6 +315,7 @@ int _mmradio_realize(mm_radio_t * radio)
 	MMRADIO_LOG_FLEAVE();
 
 	return MM_ERROR_RADIO_INTERNAL;
+*/
 }
 
 int _mmradio_unrealize(mm_radio_t * radio)
@@ -383,7 +384,6 @@ int _mmradio_destroy(mm_radio_t * radio)
 /* unit should be KHz */
 int _mmradio_set_frequency(mm_radio_t * radio, int freq)
 {
-	int ret = 0;
 	MMRADIO_LOG_FENTER();
 
 	MMRADIO_CHECK_INSTANCE(radio);
@@ -420,7 +420,7 @@ int _mmradio_set_frequency(mm_radio_t * radio, int freq)
 
 int _mmradio_get_frequency(mm_radio_t * radio, int *pFreq)
 {
-	int freq = 0;
+
 	MMRADIO_LOG_FENTER();
 
 	MMRADIO_CHECK_INSTANCE(radio);
@@ -883,7 +883,7 @@ int _mm_radio_get_signal_strength(mm_radio_t * radio, int *value)
 
 void __mmradio_scan_thread(mm_radio_t * radio)
 {
-	int ret = 0;
+
 	int prev_freq = 0;
 	EmultatorIdx = 0;
 
