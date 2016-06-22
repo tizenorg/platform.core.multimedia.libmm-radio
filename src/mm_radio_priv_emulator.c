@@ -331,10 +331,8 @@ int _mmradio_unrealize(mm_radio_t * radio)
 	/*      return MM_ERROR_RADIO_NOT_INITIALIZED; */
 
 	/* close radio device here !!!! */
-	if (radio->radio_fd >= 0) {
-		close(radio->radio_fd);
+	if (radio->radio_fd >= 0)
 		radio->radio_fd = -1;
-	}
 
 	MMRADIO_SET_STATE(radio, MM_RADIO_STATE_NULL);
 	ret = mmradio_release_audio_focus(&radio->sm);
@@ -517,15 +515,7 @@ int __mmradio_set_deemphasis(mm_radio_t * radio)
 		return MM_ERROR_COMMON_INVALID_ARGUMENT;
 	}
 
-	/* set it to device */
-	/* V4L2_CID_TUNE_DEEMPHASIS; */
-	(radio->vctrl).id = (0x009d0000 | 0x900) + 1;
-	(radio->vctrl).value = value;
-
-	if (ioctl(radio->radio_fd, VIDIOC_S_CTRL, &(radio->vctrl)) < 0) {
-		MMRADIO_LOG_ERROR("failed to set de-emphasis\n");
-		return MM_ERROR_RADIO_INTERNAL;
-	}
+	MMRADIO_LOG_DEBUG("set deemphasis %d", value);
 
 	MMRADIO_LOG_FLEAVE();
 
@@ -544,16 +534,6 @@ int __mmradio_set_band_range(mm_radio_t * radio)
 	MMRADIO_LOG_FENTER();
 	return MM_ERROR_NONE;
 	MMRADIO_CHECK_INSTANCE(radio);
-
-	/* get min and max freq. */
-	(radio->vt).rangelow = RADIO_FREQ_FORMAT_SET(radio->region_setting.band_min);
-	(radio->vt).rangehigh = RADIO_FREQ_FORMAT_SET(radio->region_setting.band_max);
-
-	/* set it to device */
-	if (ioctl(radio->radio_fd, VIDIOC_S_TUNER, &(radio->vt)) < 0) {
-		MMRADIO_LOG_ERROR("failed to set band range\n");
-		return MM_ERROR_RADIO_INTERNAL;
-	}
 
 	MMRADIO_LOG_FLEAVE();
 
