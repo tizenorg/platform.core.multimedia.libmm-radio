@@ -129,7 +129,7 @@ static bool __is_tunable_frequency(mm_radio_t *radio, int freq);
 static int __mmradio_set_deemphasis(mm_radio_t *radio);
 static int __mmradio_set_band_range(mm_radio_t *radio);
 static void __mmradio_sound_focus_cb(int id, mm_sound_focus_type_e focus_type,
-	mm_sound_focus_state_e focus_state, const char *reason_for_change,
+	mm_sound_focus_state_e focus_state, const char *reason_for_change, int option,
 	const char *additional_info, void *user_data);
 static void __mmradio_device_connected_cb(MMSoundDevice_t device, bool is_connected, void *user_data);
 
@@ -1333,7 +1333,7 @@ static int __mmradio_get_state(mm_radio_t *radio)
 }
 
 static void __mmradio_sound_focus_cb(int id, mm_sound_focus_type_e focus_type,
-	mm_sound_focus_state_e focus_state, const char *reason_for_change,
+	mm_sound_focus_state_e focus_state, const char *reason_for_change, int option,
 	const char *additional_info, void *user_data)
 {
 	mm_radio_t *radio = (mm_radio_t *)user_data;
